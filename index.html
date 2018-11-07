@@ -10,6 +10,9 @@
     <!-- <link href="css/bootstrap.min.css" rel="stylesheet"> -->
     <!-- <link href="css/cs4620.css" rel="stylesheet"> -->
 
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
+    <script src="gl.js"></script>
+
     <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
     <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
     <!--[if lt IE 9]>
@@ -22,6 +25,8 @@
     <h1>TODO</h1>
     <h2>graphics project goes here</h2>
 
+    <button id="send">Send message</button>
+
 <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
 <!-- <script src="js/jquery-3.1.1.min.js"></script> -->
 <!-- <script src="js/exif.js"></script> -->
@@ -29,15 +34,37 @@
 
 
 <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
-<!-- <script src="js/jquery-3.1.1.min.js"></script> -->
 <!-- <script src="js/jquery-ui.min.js"></script> -->
 <!-- Include all compiled plugins (below), or include individual files as needed -->
 <!-- <script src="js/bootstrap.min.js"></script> -->
 <!-- Google Code Prettifier -->
 <!-- <script src="https://cdn.rawgit.com/google/code-prettify/master/loader/run_prettify.js"></script> -->
 
-<script src="js/gl-matrix-min.js"></script>
-<script src="gl.js"></script>
+    <script language="javascript" type="text/javascript">
+        $(function() {
+            const protocol = window.location.protocol === 'https:' && 'wss://' || 'ws://';
+            const host = window.location.host + 'localhost:8080/ws/';
+            var connection = new WebSocket(protocol + host);
+            console.log(connection);
 
+            connection.onopen = function() {
+                console.log("Connected.");
+            }
+
+            connection.onmessage = function(m) {
+                console.log("Received message: " + m.data);
+            }
+
+            connection.onclose = function() {
+                console.log("Disconnected.");
+                connection = null;
+            }
+
+            $('#send').click(function() {
+                connection.send("Test");
+            });
+
+        })
+    </script>
 </body>
 </html>
