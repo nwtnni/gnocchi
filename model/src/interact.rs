@@ -7,7 +7,7 @@ use constants::EPSILON;
 pub enum Dir { N, S, E, W, U, D }
 
 #[derive(Copy, Clone, Debug, Default, PartialEq, PartialOrd)]
-pub struct Pos(f32, f32, f32);
+pub struct Pos(pub f32, pub f32, pub f32);
 
 impl Eq for Pos {}
 

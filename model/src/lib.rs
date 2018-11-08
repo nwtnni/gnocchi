@@ -1,7 +1,8 @@
 mod constants;
 mod data;
-mod interact;
+pub mod interact;
 mod generate;
 mod model;
 
 pub use model::World;
+pub use generate::Flat;
