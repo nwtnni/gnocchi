@@ -27,10 +27,11 @@ impl <G: Generator> World<G> {
         self.positions.remove(&player);
     }
 
-    pub fn try_move(&mut self, player: usize, dir: Dir, magnitude: f32) {
+    pub fn try_move(&mut self, player: usize, dir: Dir, magnitude: f32) -> Pos {
         let previous = self.positions[&player];
         // TODO: collision checking here
         let next = previous.translate(dir, magnitude);
         self.positions.insert(player, next);
+        next
     }
 }
