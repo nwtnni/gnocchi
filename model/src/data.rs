@@ -1,6 +1,7 @@
 use std::collections::HashMap;
 
 use constants::{CHUNK_SIZE, CHUNK_HEIGHT};
+use generate::Generator;
 
 #[derive(Copy, Clone, Debug, PartialEq, Eq)]
 pub enum Material {
@@ -12,18 +13,19 @@ pub enum Material {
 
 #[derive(Copy, Clone, Debug, PartialEq, Eq)]
 pub struct Block {
-    material: Material,
+    pub material: Material,
 }
 
-#[derive(Clone, Debug, PartialEq, Eq)]
+impl Block {
+    pub fn air() -> Self { Block { material: Material::Air } }
+    pub fn grass() -> Self { Block { material: Material::Grass } }
+    pub fn stone() -> Self { Block { material: Material::Stone } }
+}
+
+#[derive(Clone)]
 pub struct Chunk {
-    blocks: [[Block; CHUNK_SIZE]; CHUNK_HEIGHT],
+    pub blocks: [[Block; CHUNK_SIZE * CHUNK_SIZE]; CHUNK_HEIGHT],
 }
 
-#[derive(Debug)]
-pub struct World {
-
-    /// Lazily populated chunks
-    chunks: HashMap<(isize, isize), Chunk>,
-
-}
+#[derive(Copy, Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash)]
+pub struct Index(isize, isize);
