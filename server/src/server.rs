@@ -41,6 +41,7 @@ impl Handler<Connect> for Server {
         let player = self.connected.len();
         println!("Player {} connecting...", player);
         self.connected.insert(player, connect.addr);
+        self.world.connect(player);
         player 
     }
 }
@@ -50,6 +51,7 @@ impl Handler<Disconnect> for Server {
     
     fn handle(&mut self, disconnect: Disconnect, _: &mut Context<Self>) -> Self::Result {
         self.connected.remove(&disconnect.player);
+        self.world.disconnect(disconnect.player);
     }
 }
 
