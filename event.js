@@ -1,53 +1,57 @@
-$(function() {
-    const protocol = window.location.protocol === 'https:' && 'wss://' || 'ws://';
-    const host = window.location.host + 'localhost:8080/ws/';
-    var connection = new WebSocket(protocol + host);
-    console.log(connection);
+//$(function() {
 
-    connection.onopen = function() {
-        console.log("Connected.");
-    };
+    // const protocol = window.location.protocol === 'https:' && 'wss://' || 'ws://';
+    // const host = window.location.host + 'localhost:8080/ws/';
+    // var connection = new WebSocket(protocol + host);
+    // console.log(connection);
 
-    connection.onmessage = function(m) {
-        console.log("Received message: " + m.data);
-    };
+    // connection.onopen = function() {
+    //     console.log("Connected.");
+    // };
 
-    connection.onclose = function() {
-        console.log("Disconnected.");
-        connection = null;
-    };
+    // connection.onmessage = function(m) {
+    //     console.log("Received message: " + m.data);
+    // };
 
-    window.onkeydown = function (event) {
-        console.log(event);
-        event.preventDefault();
+    // connection.onclose = function() {
+    //     console.log("Disconnected.");
+    //     connection = null;
+    // };
 
-        switch (event.key) {
-        case "w":
-            console.log("North");
-            connection.send("N");
-            break;
-        case "a":
-            console.log("West");
-            connection.send("W");
-            break;
-        case "s":
-            console.log("South");
-            connection.send("S");
-            break;
-        case "d":
-            console.log("East");
-            connection.send("E");
-            break;
-        case "q":
-            console.log("Down");
-            connection.send("D");
-            break;
-        case "e":
-            console.log("Up");
-            connection.send("U");
-            break;
-        default:
-            break;
-        }
-    };
-});
+    // window.onkeydown = function (event) {
+    //     console.log(event);
+    //     event.preventDefault();
+
+    //     switch (event.key) {
+    //     case "w":
+    //         console.log("North");
+    //         connection.send("N");
+    //         break;
+    //     case "a":
+    //         console.log("West");
+    //         connection.send("W");
+    //         break;
+    //     case "s":
+    //         console.log("South");
+    //         connection.send("S");
+    //         break;
+    //     case "d":
+    //         console.log("East");
+    //         connection.send("E");
+    //         break;
+    //     case "q":
+    //         console.log("Down");
+    //         connection.send("D");
+    //         break;
+    //     case "e":
+    //         console.log("Up");
+    //         connection.send("U");
+    //         break;
+    //     default:
+    //         break;
+    //     }
+    // };
+//});
+var data = [0, 0, 0, 0, 0, 0, 0, 1];
+var chunk = new Chunk(2.0, data);
+

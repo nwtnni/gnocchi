@@ -67,19 +67,14 @@ class Chunk {
         const vertices = [];
         const indices = [];
         var n = this.n;
-        // .
-        // . x x o
-        // . o o o
-        // | o x o
-        // | _ _ ...
 
-        for (var i = 0; i < data.length; i++) {
+        for (var i = 0.0; i < data.length; i++) {
             if(data[i] === 1) {
-                z = Math.floor(i/n);
-                y = Math.floor(i/(Math.pow(n, 2)));
-                x = i - n*z - Math.pow(n, 2)*y;
+                var z = Math.floor(i/n);
+                var y = Math.floor(i/(Math.pow(n, 2)));
+                var x = i - n*z - Math.pow(n, 2)*y;
 
-                createBlock(vertices, indices, x, y, z);
+                this.createBlock(vertices, indices, x, y, z);
             }
         }
         return {

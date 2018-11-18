@@ -65,11 +65,30 @@ queue.on("complete",
                 };
 
                 const chunkMesh = chunk.chunkMesh();
+                // var vertexData = [
+                //     -1.0, -1.0, 0.0,
+                //     -1.0, -1.0,
+                //     1.0, -1.0, 0.0,
+                //     1.0, -1.0,
+                //     1.0, 1.0, 0.0,
+                //     1.0, 1.0,
+                //     -1.0, 1.0, 0.0,
+                //     -1.0, 1.0,
+                // ];
+
+                // var indexData = [
+                //     0, 1, 2, 0, 2, 3
+                // ];
+                // chunkMesh.vertices = vertexData;
+                // chunkMesh.indices = indexData;
                 program.chunk = createShape(
                     gl,
                     chunkMesh.vertices,
                     chunkMesh.indices
                 );
+                console.log(chunkMesh.vertices);
+                
+
             },
 
             // During update loop
@@ -109,7 +128,7 @@ queue.on("complete",
                 gl.activeTexture(gl.TEXTURE0);
                 gl.bindTexture(gl.TEXTURE_2D, program.blockTexture);
                 gl.uniform1i(program.textureLocation, 0);
-                program.draw(gl, program.wall);
+                program.draw(gl, program.chunk);
 
             }
         );

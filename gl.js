@@ -96,44 +96,44 @@ function startWebGL(canvasName, vertexShader, fragmentShader, setup, during) {
     var gl = initializeCanvas(canvasName);
     var program = createProgram(gl, vertexShader, fragmentShader);
 
-    program.chevron_angles = gl.getUniformLocation(program, "chevron_angles[0]");
-    program.num_chevrons = gl.getUniformLocation(program, "num_chevrons");
+    // program.chevron_angles = gl.getUniformLocation(program, "chevron_angles[0]");
+    // program.num_chevrons = gl.getUniformLocation(program, "num_chevrons");
 
     setup(gl, program);
 
-    var vertexData = [
-        -1.0, -1.0, 0.0,
-        -1.0, -1.0,
-        1.0, -1.0, 0.0,
-        1.0, -1.0,
-        1.0, 1.0, 0.0,
-        1.0, 1.0,
-        -1.0, 1.0, 0.0,
-        -1.0, 1.0,
-    ];
+    // var vertexData = [
+    //     -1.0, -1.0, 0.0,
+    //     -1.0, -1.0,
+    //     1.0, -1.0, 0.0,
+    //     1.0, -1.0,
+    //     1.0, 1.0, 0.0,
+    //     1.0, 1.0,
+    //     -1.0, 1.0, 0.0,
+    //     -1.0, 1.0,
+    // ];
 
-    var indexData = [
-        0, 1, 2, 0, 2, 3
-    ];
+    // var indexData = [
+    //     0, 1, 2, 0, 2, 3
+    // ];
 
-    var rectangle = createShape(gl, vertexData, indexData);
+    // var rectangle = createShape(gl, vertexData, indexData);
 
     function updateWebGL() {
-        gl.clearColor(0.5, 0.5, 0.5, 1.0);
-        gl.clear(gl.COLOR_BUFFER_BIT);
+        // gl.clearColor(0.5, 0.5, 0.5, 1.0);
+        // gl.clear(gl.COLOR_BUFFER_BIT);
         gl.useProgram(program);
 
-        drawShape(gl, program, rectangle);
+        //drawShape(gl, program, rectangle);
 
         
 
-        if (program.chevron_angles != null) {
-            gl.uniform1f(program.chevron_angles, GRAPH);
-        }
-        if (program.num_chevrons != null) {
-            gl.uniform1i(program.num_chevrons, GRAPH.getNode().outgoingAngles().length);
-        }
-        console.log( GRAPH);
+        // if (program.chevron_angles != null) {
+        //     gl.uniform1f(program.chevron_angles, GRAPH);
+        // }
+        // if (program.num_chevrons != null) {
+        //     gl.uniform1i(program.num_chevrons, GRAPH.getNode().outgoingAngles().length);
+        // }
+        // console.log( GRAPH);
 
 
 
