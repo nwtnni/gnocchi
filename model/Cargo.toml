@@ -7,3 +7,4 @@ authors = ["Newton Ni <nwtnni@gmail.com>"]
 serde = "1.0"
 serde_json = "1.0"
 serde_derive = "1.0"
+nalgebra-glm = "0.2"
