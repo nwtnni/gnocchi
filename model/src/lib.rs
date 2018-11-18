@@ -1,3 +1,5 @@
+extern crate nalgebra_glm as glm;
+
 mod constants;
 mod data;
 pub mod interact;
