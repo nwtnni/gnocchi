@@ -1,2 +1,6 @@
 # Linter configuration
 .jshintrc
+
+# Cargo-related
+Cargo.lock
+target/

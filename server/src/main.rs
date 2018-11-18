@@ -1,16 +1,17 @@
-// #[macro_use]
+#[macro_use]
 extern crate actix;
 extern crate actix_web;
 extern crate failure;
 extern crate futures;
+extern crate nalgebra_glm as glm;
 extern crate serde;
-// #[macro_use]
+#[macro_use]
 extern crate serde_derive;
 extern crate serde_json;
 
 extern crate model;
 
-mod data;
+mod message;
 mod server;
 
 use actix::prelude::*;
@@ -61,10 +62,12 @@ impl Actor for Session {
     }
 }
 
-impl Handler<server::Pos> for Session {
+impl Handler<message::Outgoing> for Session {
     type Result = (); 
-    fn handle(&mut self, msg: server::Pos, ctx: &mut Self::Context) {
-        ctx.text(format!("{},{},{}", msg.0, msg.1, msg.2));
+    fn handle(&mut self, msg: message::Outgoing, ctx: &mut Self::Context) {
+        let response = serde_json::to_string(&msg)
+            .expect("[INTERNAL ERROR]: failed to serialize outgoing message");
+        ctx.text(response);
     }
 }
 
@@ -72,32 +75,17 @@ impl StreamHandler<ws::Message, ws::ProtocolError> for Session {
     fn handle(&mut self, msg: ws::Message, ctx: &mut Self::Context) {
         println!("Received websocket message in session: {:?}", msg);
 
-        let dir = match &msg {
+        match msg {
         | ws::Message::Text(dir) => {
-            match dir.as_ref() {
-            | "N" => Some(model::interact::Dir::N),
-            | "S" => Some(model::interact::Dir::S),
-            | "E" => Some(model::interact::Dir::E),
-            | "W" => Some(model::interact::Dir::W),
-            | "U" => Some(model::interact::Dir::U),
-            | "D" => Some(model::interact::Dir::D),
-            | _   => None,
-            }
-        }
-        | _ => None,
-        };
+            let incoming = serde_json::from_str(&dir)
+                .map(|incoming| server::Incoming(self.player, incoming))
+                .expect("[CLIENT ERROR]: could not parse JSON");
 
-        if let Some(dir) = dir {
-            ctx.state()
-                .addr
-                .do_send(server::Move {
-                    player: self.player,  
-                    direction: dir, 
-                    magnitude: 0.0005,
-                });
-        } else if let ws::Message::Close(_) = msg {
-            ctx.stop();
+            ctx.state().addr.do_send(incoming);
         }
+        | ws::Message::Close(_) => ctx.stop(),
+        | _ => (),
+        };
     }
 }
 

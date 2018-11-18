@@ -2,19 +2,16 @@ use std::collections::HashMap;
 
 use actix::prelude::*;
 use model::{World, Flat};
-
-#[derive(Message)]
-pub struct Move {
-    pub player: usize,
-    pub direction: model::interact::Dir, 
-    pub magnitude: f32,
-}
+use message;
 
 #[derive(Message)]
 #[rtype(usize)]
 pub struct Connect {
-    pub addr: Recipient<Pos>,
+    pub addr: Recipient<message::Outgoing>,
 }
+
+#[derive(Message)]
+pub struct Incoming(pub usize, pub message::Incoming);
 
 #[derive(Message)]
 pub struct Disconnect {
@@ -26,7 +23,7 @@ pub struct Pos(pub f32, pub f32, pub f32);
 
 #[derive(Default)]
 pub struct Server {
-    connected: HashMap<usize, Recipient<Pos>>,
+    connected: HashMap<usize, Recipient<message::Outgoing>>,
     world: World<Flat>,
 }
 
@@ -55,12 +52,19 @@ impl Handler<Disconnect> for Server {
     }
 }
 
-impl Handler<Move> for Server {
+impl Handler<Incoming> for Server {
     type Result = ();
 
-    fn handle(&mut self, movement: Move, _: &mut Context<Self>) -> Self::Result {
-        let next = self.world.try_move(movement.player, movement.direction, movement.magnitude);
-        let next = Pos(next.0, next.1, next.2);
-        self.connected[&movement.player].do_send(next);
+    fn handle(&mut self, Incoming(player, message): Incoming, _: &mut Context<Self>) -> Self::Result {
+        match message {
+        | message::Incoming::MoveData { direction } => {
+            let next = self.world.try_move(player, direction, 0.01);
+            let response = message::Outgoing::EntityData { id: player, position: next };
+            self.connected[&player]
+                .do_send(response)
+                .expect("[INTERNAL ERROR]: failed to send response");
+        },
+        | _ => unimplemented!(),
+        }
     }
 }
