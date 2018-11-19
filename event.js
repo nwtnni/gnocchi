@@ -20,11 +20,11 @@ $(function() {
             case "BlockData":
                 var block = new Block(data.block.material, data.block.location);
                 var blockData = new BlockData(data.chunkID, block);
-                // TODO add diff-y things here
+                currChunk.blockDiff(blockData);
                 break;
             case "EntityData":
                 var entityData = new EntityData(data.id, data.position);
-                // TODO
+                entityLocation = entityData.coordinate;
                 break;
         }
     };
