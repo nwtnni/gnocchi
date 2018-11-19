@@ -12,14 +12,12 @@ enum_number! (
 
 #[derive(Serialize, Deserialize)]
 #[derive(Copy, Clone, Debug, PartialEq, Eq)]
-pub struct Block {
-    pub material: Material,
-}
+pub struct Block(Material);
 
 impl Block {
-    pub fn air() -> Self { Block { material: Material::Air } }
-    pub fn stone() -> Self { Block { material: Material::Stone } }
-    pub fn grass() -> Self { Block { material: Material::Grass } }
+    pub fn air() -> Self { Block(Material::Air) }
+    pub fn stone() -> Self { Block(Material::Stone) }
+    pub fn grass() -> Self { Block(Material::Grass) }
 }
 
 #[derive(Clone)]

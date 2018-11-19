@@ -15,7 +15,7 @@ pub enum Outgoing {
     ChunkData {
         #[serde(rename = "chunkID")]
         index: data::Index,
-        materials: Vec<data::Material>,
+        materials: Vec<data::Block>,
     },
 
     BlockData {
