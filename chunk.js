@@ -121,7 +121,7 @@ class Chunk {
             vertices: vertices,
             indices: Array.from(
                 new Array(Math.floor(vertices.length / 5)),
-                function (x, i) { return i + 1; }
+                function (x, i) { return i; }
             )
         };
     }
