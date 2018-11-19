@@ -15,13 +15,13 @@ $(function() {
         switch (data.type) {
             case "ChunkData":
                 var chunkData = new ChunkData(data.chunkID, data.materials);
-                currChunk = chunkData.getChunk();
-                reloadChunk = true;
+                CURRENT_CHUNK = chunkData.getChunk();
+                RELOAD = true;
                 break;
             case "BlockData":
                 var block = new Block(data.block.material, data.block.location);
                 var blockData = new BlockData(data.chunkID, block);
-                currChunk.blockDiff(blockData);
+                CURRENT_CHUNK.blockDiff(blockData);
                 break;
             case "EntityData":
                 var entityData = new EntityData(data.id, data.position);

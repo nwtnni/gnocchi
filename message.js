@@ -13,7 +13,7 @@ class ChunkData {
     }
 
     getChunk() {
-        return new Chunk(chunkSize, this.chunkID, this.blocks);
+        return new Chunk(CHUNK_SIZE, this.chunkID, this.blocks);
     }
 
     getID() {
@@ -24,8 +24,8 @@ class ChunkData {
         if (this.chunk_id === blockData.chunk_id) {
             var block = blockData.block;
             this.blocks
-                [chunkSize * chunkSize * blockData.location[1] 
-                + chunkSize * blockData.location[2] 
+                [(CHUNK_SIZE * CHUNK_SIZE * blockData.location[1])
+                + (CHUNK_SIZE * blockData.location[2])
                 + blockData.location[0]] = blockData.material; 
         }
     }

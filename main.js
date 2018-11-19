@@ -63,21 +63,14 @@ queue.on("complete",
                     gl.drawElements(gl.TRIANGLES, shape.size, gl.UNSIGNED_SHORT, 0);
                     gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, null);
                 };
-
-                const chunkMesh = currChunk.chunkMesh();
-                program.chunk = createShape(
-                    gl,
-                    chunkMesh.vertices,
-                    chunkMesh.indices
-                );
             },
 
             // During update loop
             function(gl, program) {
 
-                if (reloadChunk) {
-                    reloadChunk = false;
-                    const chunkMesh = currChunk.chunkMesh();
+                if (RELOAD) {
+                    RELOAD = false;
+                    const chunkMesh = CURRENT_CHUNK.chunkMesh();
                     program.chunk = createShape(
                         gl,
                         chunkMesh.vertices,
@@ -89,20 +82,6 @@ queue.on("complete",
                 // gl.clearColor(0.3, 0.7, 1.0, 1.0);
                 gl.enable(gl.DEPTH_TEST);
                 gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
-
-                // Hot reloading of new mazes
-                // if (RELOAD_MAZE) {
-                //     const chunkMesh = chunk.chunkMesh();
-                //     program.chunk = createShape(
-                //         gl,
-                //         chunkMesh.vertices,
-                //         chunkMesh.indices
-                //     );
-                //     RELOAD_MAZE = false;
-                // }
-
-                // // Disable user input if game over
-                // GAME_OVER = maze.gameOver();
 
                 // Update entity position and heading
                 // maze.translate();
@@ -118,8 +97,10 @@ queue.on("complete",
                 gl.activeTexture(gl.TEXTURE0);
                 gl.bindTexture(gl.TEXTURE_2D, program.wallTexture);
                 gl.uniform1i(program.textureLocation, 0);
-                program.draw(gl, program.chunk);
 
+                if (program.chunk) {
+                    program.draw(gl, program.chunk);
+                }
             }
         );
     }, this
