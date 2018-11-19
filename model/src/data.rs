@@ -46,7 +46,7 @@ impl Block {
 #[derive(Clone, Debug)]
 pub struct Mesh {
     pub index: Index,
-    pub blocks: Map<Location, (Block, Set<Face>)>,
+    pub blocks: Vec<(Location, Block, Set<Face>)>,
 }
 
 #[derive(Clone, Debug)]

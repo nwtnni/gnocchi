@@ -47,8 +47,6 @@ impl <G: Generator> World<G> {
             self.lazy_load(index);
         }
 
-        // Merged chunk has coordinates of lower-left
-        let index = Index(index.0 - 1, index.1 - 1);
         let mut blocks: Map<Location, (Block, Set<Face>)> = Map::default();
 
         for (i, chunk) in Self::around(index).map(|index| &self.chunks[&index]).enumerate() {
@@ -62,19 +60,25 @@ impl <G: Generator> World<G> {
                 // Check for collisions with existing blocks
                 for (l2, b2) in &mut blocks {
                     if let Some((me, other)) = l1.facing(l2) {
-                        faces.remove(&me); 
+                        faces.remove(&me);
                         b2.1.remove(&other);
                     }
                 }
-                
+
                 // Insert new face
                 blocks.insert(l1, (*b1, faces));
             }
         }
 
+        // Merged chunk has coordinates of lower-left
+        let index = Index(index.0 - 1, index.1 - 1);
         blocks.retain(|_, (_, faces)| !faces.is_empty());
-
-        Mesh { index, blocks }
+        Mesh {
+            index,
+            blocks: blocks.into_iter()
+                .map(|(l, (m, f))| (l, m, f))
+                .collect(),
+        }
     }
 
     pub fn connect(&mut self, player: usize) -> Mesh {
