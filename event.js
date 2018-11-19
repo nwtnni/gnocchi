@@ -52,6 +52,6 @@ $(function() {
     //     }
     // };
 });
-var data = [0, 0, 0, 0, 0, 0, 0, 1];
-var chunk = new Chunk(2.0, data);
 
+var data = [1, 1, 1, 1, 1, 1, 1, 1];
+var chunk = new Chunk(2, [0, -10], data);
