@@ -7,9 +7,9 @@ class Block {
 
 // Incoming (server -> client) data types
 class ChunkData {
-    constructor(index, blocks) {
-        this.index = index;
-        this.blocks = blocks;
+    constructor(data) {
+        this.index = data.index;
+        this.blocks = data.blocks;
     }
 
     getChunk() {

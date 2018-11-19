@@ -73,33 +73,45 @@ class Chunk {
     }
 
     // Create a cube with min-x, min-y, min-z coordinate at [x, y, z]
-    createBlock(vertices, x, y, z, texture) {
-        //  _
-        // |_|
-        //  *
-        this.createWall(vertices, x, z, x + 1, z, y, texture);
+    createBlock(vertices, x, y, z, texture, faces) {
 
-        //   _
-        // *|_|
-        //
-        this.createWall(vertices, x, z, x, z + 1, y, texture);
-
-        //  _
-        // |_|*
-        //
-        this.createWall(vertices, x + 1, z, x + 1, z + 1, y, texture);
-
-        //  *
-        //  _
-        // |_|
-        //
-        this.createWall(vertices, x, z + 1, x + 1, z + 1, y, texture);
-
-        // Lower face
-        this.createFloor(vertices, x, z, x + 1, z + 1, y, texture);
-
-        // Upper face
-        this.createFloor(vertices, x, z, x + 1, z + 1, y + 1, texture);
+        for (var i = 0; i < faces.length; i++) {
+            switch (faces[i]) {
+            case 0:
+                //   _
+                // *|_|
+                //
+                this.createWall(vertices, x, z, x, z + 1, y, texture);
+                break;
+            case 1: 
+                //  _
+                // |_|
+                //  *
+                this.createWall(vertices, x, z, x + 1, z, y, texture);
+                break;
+            case 2:
+                //  _
+                // |_|*
+                //
+                this.createWall(vertices, x + 1, z, x + 1, z + 1, y, texture);
+                break;
+            case 3:
+                //  *
+                //  _
+                // |_|
+                //
+                this.createWall(vertices, x, z + 1, x + 1, z + 1, y, texture);
+                break;
+            case 4:
+                // Lower face
+                this.createFloor(vertices, x, z, x + 1, z + 1, y, texture);
+                break;
+            case 5:
+                // Upper face
+                this.createFloor(vertices, x, z, x + 1, z + 1, y + 1, texture);
+                break;
+            }
+        }
     }
 
     // Generate the mesh representing the chunk
@@ -107,15 +119,17 @@ class Chunk {
         const vertices = [];
         const dx = this.index[0] * this.size;
         const dz = this.index[1] * this.size;
-        const sqSize = this.size * this.size;
         for (var i = 0.0; i < this.data.length; i++) {
-            if(this.data[i] !== 0) {
-                const x = i % this.size;
-                const z = Math.floor((i % sqSize) / this.size);
-                const y = Math.floor(i / sqSize);
-                // TODO: is this flip necessary?
-                this.createBlock(vertices, -(x + dx), -y, z + dz, this.data[i]);
-            }
+            const block = this.data[i];
+            const location = block[0];
+            const material = block[1];
+            const faces = block[2];
+            const x = location[0] + dx;
+            const y = location[1];
+            const z = location[2] + dz;
+
+            // TODO: is this flip necessary?
+            this.createBlock(vertices, x, y, z, material, faces);
         }
         return {
             vertices: vertices,

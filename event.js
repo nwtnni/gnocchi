@@ -17,7 +17,7 @@ $(function() {
         console.log("Received message: " + data.type);
         switch (data.type) {
             case "ChunkData":
-                var chunkData = new ChunkData(data.index, data.materials);
+                var chunkData = new ChunkData(data);
                 CURRENT_CHUNK = chunkData.getChunk();
                 RELOAD = true;
                 break;
