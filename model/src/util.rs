@@ -1,7 +1,7 @@
 #[macro_use]
 macro_rules! enum_number {
     ($name:ident { $($variant:ident = $value:expr, )* }) => {
-        #[derive(Clone, Copy, Debug, Eq, PartialEq)]
+        #[derive(Clone, Copy, Debug, Eq, PartialEq, Hash)]
         pub enum $name {
             $($variant = $value,)*
         }

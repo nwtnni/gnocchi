@@ -14,13 +14,13 @@ $(function() {
         console.log("Received message: " + data.type);
         switch (data.type) {
             case "ChunkData":
-                var chunkData = new ChunkData(data.chunkID, data.materials);
+                var chunkData = new ChunkData(data.index, data.materials);
                 CURRENT_CHUNK = chunkData.getChunk();
                 RELOAD = true;
                 break;
             case "BlockData":
                 var block = new Block(data.block.material, data.block.location);
-                var blockData = new BlockData(data.chunkID, block);
+                var blockData = new BlockData(data.index, block);
                 CURRENT_CHUNK.blockDiff(blockData);
                 break;
             case "EntityData":

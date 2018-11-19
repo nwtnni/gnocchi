@@ -1,8 +1,6 @@
-use std::collections::HashMap;
+use std::collections::{HashSet as Set, HashMap as Map};
 
-use glm;
-
-use constants::{CHUNK_SIZE, CHUNK_AREA, CHUNK_VOLUME};
+use constants::CHUNK_SIZE;
 use data::*;
 use generate::Generator;
 
@@ -16,22 +14,21 @@ const AROUND: [(isize, isize); 9] = [
 pub struct World<G: Generator> {
 
     /// Lazily populated chunks
-    chunks: HashMap<Index, Chunk>,
+    chunks: Map<Index, Chunk>,
 
     /// Chunk generator
     generator: G,
 
     /// Player positions
-    positions: HashMap<usize, Position>,
+    positions: Map<usize, Position>,
 }
 
 impl <G: Generator> World<G> {
 
-    fn lazy_load(&mut self, index: Index) -> Chunk {
+    fn lazy_load(&mut self, index: Index) {
         if !self.chunks.contains_key(&index) {
             self.chunks.insert(index, self.generator.generate(index));
         }
-        self.chunks[&index].clone()
     }
 
     fn to_index(position: Position) -> Index {
@@ -45,41 +42,42 @@ impl <G: Generator> World<G> {
         AROUND.iter().map(move |(dx, dz)| Index(index.0 + dx, index.1 + dz))
     }
 
-    fn load_around(&mut self, index: Index) -> Chunk {
-        let chunks = Self::around(index)
-            .map(|index| self.lazy_load(index))
-            .collect::<Vec<_>>();
+    fn load_around(&mut self, index: Index) -> Mesh {
+        for index in Self::around(index) {
+            self.lazy_load(index);
+        }
 
         // Merged chunk has coordinates of lower-left
         let index = Index(index.0 - 1, index.1 - 1);
-        let mut blocks = vec![Block(Material::Air); CHUNK_VOLUME * 9];
+        let mut blocks: Map<Location, (Block, Set<Face>)> = Map::default();
 
-        for cz in 0..3 {
-            for cx in 0..3 {
-                let chunk = &chunks[cz * 3 + cx];
+        for (i, chunk) in Self::around(index).map(|index| &self.chunks[&index]).enumerate() {
+            let dz = (i / 3) * CHUNK_SIZE;
+            let dx = (i % 3) * CHUNK_SIZE;
 
-                // Offset of chunk from lower-left
-                let dz = cz * CHUNK_SIZE;
-                let dx = cx * CHUNK_SIZE;
+            for (l, b1) in &chunk.blocks {
+                let l1 = Location(l.0 + dx, l.1, l.2 + dz);
+                let mut faces = Face::all();
 
-                for y in 0..CHUNK_SIZE {
-                    for z in 0..CHUNK_SIZE {
-                        for x in 0..CHUNK_SIZE {
-                            let block = chunk.get(Location(x, y, z));
-                            let location = (x + dx)
-                                + ((z + dz) * CHUNK_SIZE * 3)
-                                + (y * CHUNK_AREA * 9);
-                            blocks[location] = block;
-                        }
+                // Check for collisions with existing blocks
+                for (l2, b2) in &mut blocks {
+                    if let Some((me, other)) = l1.facing(l2) {
+                        faces.remove(&me); 
+                        b2.1.remove(&other);
                     }
                 }
+                
+                // Insert new face
+                blocks.insert(l1, (*b1, faces));
             }
         }
 
-        Chunk { index, blocks }
+        blocks.retain(|_, (_, faces)| !faces.is_empty());
+
+        Mesh { index, blocks }
     }
 
-    pub fn connect(&mut self, player: usize) -> Chunk {
+    pub fn connect(&mut self, player: usize) -> Mesh {
         let start = Position::default();
         let index = Self::to_index(start);
         self.positions.insert(player, start);
@@ -95,7 +93,7 @@ impl <G: Generator> World<G> {
         player: usize,
         direction: Direction,
         magnitude: f32
-    ) -> (Position, Option<Chunk>) {
+    ) -> (Position, Option<Mesh>) {
         // TODO: collision checking here
         let prev = self.positions[&player];
         let next = prev.translate(direction, magnitude);
