@@ -83,7 +83,9 @@ class Chunk {
                 //
                 this.createWall(vertices, x, z, x, z + 1, y, texture);
                 break;
-            case 1: 
+
+            // TODO: +z and -z directions also flipped???
+            case 3: 
                 //  _
                 // |_|
                 //  *
@@ -95,18 +97,20 @@ class Chunk {
                 //
                 this.createWall(vertices, x + 1, z, x + 1, z + 1, y, texture);
                 break;
-            case 3:
+            case 1:
                 //  *
                 //  _
                 // |_|
                 //
                 this.createWall(vertices, x, z + 1, x + 1, z + 1, y, texture);
                 break;
-            case 4:
+
+            // TODO: lower face and upper face flipped
+            case 5:
                 // Lower face
                 this.createFloor(vertices, x, z, x + 1, z + 1, y, texture);
                 break;
-            case 5:
+            case 4:
                 // Upper face
                 this.createFloor(vertices, x, z, x + 1, z + 1, y + 1, texture);
                 break;
@@ -127,7 +131,9 @@ class Chunk {
             const x = location[0] + dx;
             const y = location[1];
             const z = location[2] + dz;
-            this.createBlock(vertices, x, y, z, material, faces);
+
+            // TODO: why is this -y
+            this.createBlock(vertices, x, -y, z, material, faces);
         }
         return {
             vertices: vertices,

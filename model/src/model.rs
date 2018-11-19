@@ -75,7 +75,6 @@ impl <G: Generator> World<G> {
         // Merged chunk has coordinates of lower-left
         let index = Index(index.0 - 1, index.1 - 1);
         blocks.retain(|_, (_, faces)| !faces.is_empty());
-        println!("{:#?}", blocks);
         Mesh {
             index,
             blocks: blocks.into_iter()

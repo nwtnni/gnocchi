@@ -1,7 +1,7 @@
 use std::collections::HashMap;
 
 use actix::prelude::*;
-use model::{World, Flat};
+use model::{World, Height};
 use message;
 
 #[derive(Message)]
@@ -24,7 +24,7 @@ pub struct Pos(pub f32, pub f32, pub f32);
 #[derive(Default)]
 pub struct Server {
     connected: HashMap<usize, Recipient<message::Outgoing>>,
-    world: World<Flat>,
+    world: World<Height>,
 }
 
 impl Actor for Server {
