@@ -1,3 +1,6 @@
+var CURR_X;
+var CURR_Y;
+
 $(function() {
 
     const protocol = window.location.protocol === 'https:' && 'wss://' || 'ws://';
@@ -35,6 +38,19 @@ $(function() {
         console.log("Disconnected.");
         connection = null;
     };
+
+    webglCanvas.onmouseenter = function (event) {
+        event.preventDefault();
+        CURR_X = event.clientX;
+        CURR_Y = event.clientY;
+    }
+
+    webglCanvas.onmousemove = function (event) {
+        event.preventDefault();
+        // event.clientX - CURR_X;
+        console.log("hi");
+        // dispatchEvent(new Event('load'));
+    }
 
     window.onkeydown = function (event) {
         var direction = null;
