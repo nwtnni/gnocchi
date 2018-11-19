@@ -8,18 +8,13 @@ pub struct Block {
 }
 
 #[derive(Message)]
-#[derive(Serialize, Deserialize)]
+#[derive(Serialize)]
 #[derive(Clone, Debug)]
 #[serde(tag = "type", deny_unknown_fields)]
 pub enum Outgoing {
-    ChunkData {
-        #[serde(rename = "chunkID")]
-        index: data::Index,
-        materials: Vec<data::Block>,
-    },
+    ChunkData(data::Mesh),
 
     BlockData {
-        #[serde(rename = "chunkID")]
         index: data::Index,
         block: Block,
     },
@@ -31,18 +26,16 @@ pub enum Outgoing {
 }
 
 #[derive(Message)]
-#[derive(Serialize, Deserialize)]
+#[derive(Deserialize)]
 #[derive(Clone, Debug)]
 #[serde(tag = "type", deny_unknown_fields)]
 pub enum Incoming {
     CreateBlock {
-        #[serde(rename = "chunkID")]
         index: data::Index,   
         block: Block,
     },
 
     RemoveBlock {
-        #[serde(rename = "chunkID")]
         index: data::Index,   
         block: Block,
     },

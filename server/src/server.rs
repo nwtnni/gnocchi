@@ -37,13 +37,11 @@ impl Handler<Connect> for Server {
     fn handle(&mut self, connect: Connect, _: &mut Context<Self>) -> Self::Result {
         let player = self.connected.len();
         println!("Player {} connecting...", player);
-        let chunk = self.world.connect(player);
-        println!("Sending chunk {:?}", chunk.index);
-        let chunk = message::Outgoing::ChunkData {
-            index: chunk.index, materials: chunk.blocks,
-        };
+        let mesh = self.world.connect(player);
+        println!("Sending chunk {:?}", mesh.index);
+        let mesh = message::Outgoing::ChunkData(mesh);
         connect.addr
-            .do_send(chunk)
+            .do_send(mesh)
             .expect("[INTERNAL ERROR]: failed to send chunk");
         self.connected.insert(player, connect.addr);
         player 
@@ -67,12 +65,10 @@ impl Handler<Incoming> for Server {
         | message::Incoming::MoveData { direction } => {
             let (next, loaded) = self.world.try_move(player, direction, 1.0);
             let address = &self.connected[&player];
-            if let Some(chunk) = loaded {
-                let chunk = message::Outgoing::ChunkData {
-                    index: chunk.index, materials: chunk.blocks,
-                };
+            if let Some(mesh) = loaded {
+                let mesh = message::Outgoing::ChunkData(mesh);
                 address
-                    .do_send(chunk)
+                    .do_send(mesh)
                     .expect("[INTERNAL ERROR]: failed to send chunk");
             }
             let entity = message::Outgoing::EntityData {
