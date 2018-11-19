@@ -21,21 +21,36 @@ class Chunk {
     }
 
     // Create a single square from four corners [bl], [br], [tl], and [tr]
-    createSquare(vertices, bl, br, tl, tr) {
-
+    createSquare(vertices, bl, br, tl, tr, texture) {
+        var xTex = 0;
+        var yTex = 0;
+        switch (texture) {
+            case 0: 
+                break;
+            case 1:
+                xTex = 0.5;
+                break;
+            case 2:
+                yTex = 0.5;
+                break;
+            case 3:
+                xTex = 0.5;
+                yTex = 0.5;
+                break;
+        }
         // 3 ---- 2
         //   |x/|
         // 1 |/_|
-        this.createVertex(vertices, bl, 0.0, 0.0);
-        this.createVertex(vertices, tr, 1.0, 1.0);
-        this.createVertex(vertices, tl, 0.0, 1.0);
+        this.createVertex(vertices, bl, 0.0 + xTex, 0.0 + yTex);
+        this.createVertex(vertices, tr, 0.5 + xTex, 0.5 + yTex);
+        this.createVertex(vertices, tl, 0.0 + xTex, 0.5 + yTex);
 
         //   ---- 3
         //   | /|
         // 1 |/x| 2
-        this.createVertex(vertices, bl, 0.0, 0.0);
-        this.createVertex(vertices, br, 1.0, 0.0);
-        this.createVertex(vertices, tr, 1.0, 1.0);
+        this.createVertex(vertices, bl, 0.0 + xTex, 0.0 + yTex);
+        this.createVertex(vertices, br, 0.5 + xTex, 0.0 + yTex);
+        this.createVertex(vertices, tr, 0.5 + xTex, 0.5 + yTex);
     }
 
     // Create a vertical wall from bottom two points [x1, z1] and [x2, z2] at height [y]
