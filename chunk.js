@@ -77,7 +77,9 @@ class Chunk {
 
         for (var i = 0; i < faces.length; i++) {
             switch (faces[i]) {
-            case 0:
+
+            // TODO ...and X, -X? what's happening
+            case 2:
                 //   _
                 // *|_|
                 //
@@ -91,7 +93,7 @@ class Chunk {
                 //  *
                 this.createWall(vertices, x, z, x + 1, z, y, texture);
                 break;
-            case 2:
+            case 0:
                 //  _
                 // |_|*
                 //
@@ -133,7 +135,7 @@ class Chunk {
             const z = location[2] + dz;
 
             // TODO: why is this -y
-            this.createBlock(vertices, x, -y, z, material, faces);
+            this.createBlock(vertices, -x, -y, z, material, faces);
         }
         return {
             vertices: vertices,
