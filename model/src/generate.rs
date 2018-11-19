@@ -14,7 +14,7 @@ impl Generator for Flat {
         let air = Block::air();
         let grass = Block::grass();
         let stone = Block::stone();
-        let mut chunk = Chunk { index, blocks: [air; CHUNK_VOLUME] };
+        let mut chunk = Chunk { index, blocks: vec![air; CHUNK_VOLUME] };
         for z in 0..CHUNK_SIZE {
             for x in 0..CHUNK_SIZE {
                 chunk.set(Location(x, 0, z), stone);

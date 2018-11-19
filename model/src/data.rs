@@ -1,6 +1,6 @@
 use glm;
 
-use constants::{CHUNK_SIZE, CHUNK_AREA, CHUNK_VOLUME};
+use constants::{CHUNK_SIZE, CHUNK_AREA};
 
 enum_number! (
     Material {
@@ -20,10 +20,10 @@ impl Block {
     pub fn grass() -> Self { Block(Material::Grass) }
 }
 
-#[derive(Clone)]
+#[derive(Clone, Debug)]
 pub struct Chunk {
     pub index: Index,
-    pub blocks: [Block; CHUNK_VOLUME],
+    pub blocks: Vec<Block>,
 }
 
 impl Chunk {
