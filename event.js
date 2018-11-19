@@ -16,6 +16,7 @@ $(function() {
             case "ChunkData":
                 var chunkData = new ChunkData(data.chunkID, data.materials);
                 currChunk = chunkData.getChunk();
+                reloadChunk = true;
                 break;
             case "BlockData":
                 var block = new Block(data.block.material, data.block.location);
@@ -68,6 +69,3 @@ $(function() {
     //     }
     // };
 });
-
-var data = [1, 3, 1, 0, 1, 1, 1, 1];
-var chunk = new Chunk(2, [0, -10], data);

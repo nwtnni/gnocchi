@@ -64,35 +64,26 @@ queue.on("complete",
                     gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, null);
                 };
 
-                const chunkMesh = chunk.chunkMesh();
-                // var vertexData = [
-                //     -1.0, -1.0, -10.0,
-                //     0.0, 0.0,
-                //     1.0, -1.0, -10.0,
-                //     1.0, 0.0,
-                //     1.0, 1.0, -10.0,
-                //     1.0, 1.0,
-                //     -1.0, 1.0, -10.0,
-                //     0.0, 1.0,
-                // ];
-
-                // var indexData = [
-                //     0, 1, 2, 0, 2, 3
-                // ];
-                // chunkMesh.vertices = vertexData;
-                // chunkMesh.indices = indexData;
+                const chunkMesh = currChunk.chunkMesh();
                 program.chunk = createShape(
                     gl,
                     chunkMesh.vertices,
                     chunkMesh.indices
                 );
-                console.log(chunkMesh.vertices);
-                
-
             },
 
             // During update loop
             function(gl, program) {
+
+                if (reloadChunk) {
+                    reloadChunk = false;
+                    const chunkMesh = currChunk.chunkMesh();
+                    program.chunk = createShape(
+                        gl,
+                        chunkMesh.vertices,
+                        chunkMesh.indices
+                    );
+                }
 
                 // Sky color
                 // gl.clearColor(0.3, 0.7, 1.0, 1.0);

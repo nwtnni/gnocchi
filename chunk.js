@@ -25,7 +25,7 @@ class Chunk {
         var xTex = 0;
         var yTex = 0;
         switch (texture) {
-            case 0: 
+            case 0:
                 break;
             case 1:
                 xTex = 0.5;
@@ -38,7 +38,7 @@ class Chunk {
                 yTex = 0.5;
                 break;
         }
-        console.log(texture);
+
         // 3 ---- 2
         //   |x/|
         // 1 |/_|
@@ -108,13 +108,13 @@ class Chunk {
         const dx = this.index[0] * this.size;
         const dz = this.index[1] * this.size;
         const sqSize = this.size * this.size;
-        for (var i = 0.0; i < data.length; i++) {
-            if(data[i] !== 0) {
+        for (var i = 0.0; i < this.data.length; i++) {
+            if(this.data[i] !== 0) {
                 const x = i % this.size;
                 const z = Math.floor((i % sqSize) / this.size);
                 const y = Math.floor(i / sqSize);
                 // TODO: is this flip necessary?
-                this.createBlock(vertices, -(x + dx), -y, z + dz, data[i]);
+                this.createBlock(vertices, -(x + dx), -y, z + dz, this.data[i]);
             }
         }
         return {

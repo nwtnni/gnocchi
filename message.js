@@ -7,17 +7,17 @@ class Block {
 
 // Incoming (server -> client) data types
 class ChunkData {
-    constructor(chunk_id, blocks) {
-        this.chunk_id = chunk_id;
+    constructor(chunkID, blocks) {
+        this.chunkID = chunkID;
         this.blocks = blocks;
     }
 
     getChunk() {
-        return new Chunk(chunkSize, this.blocks);
+        return new Chunk(chunkSize, this.chunkID, this.blocks);
     }
 
     getID() {
-        return this.chunk_id;
+        return this.chunkID;
     }
 
     blockDiff(blockData) {
