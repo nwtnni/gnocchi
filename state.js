@@ -5,7 +5,7 @@ var POSITION = [0.0, 0.0, 0.0];
 var DIRECTION = [0.0, 0.0, -1.0];
 
 function getProjMatrix() {
-    var fov = 50.0;
+    var fov = 80.0;
     var aspect = 800.0/600.0; //canvas width always 800 px wide, 600 px high
     var n = 0.1;
     var f = 100.0;
