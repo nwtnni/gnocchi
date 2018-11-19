@@ -1,5 +1,7 @@
 use std::collections::{HashSet as Set, HashMap as Map};
 
+use glm;
+
 use constants::CHUNK_SIZE;
 use data::*;
 use generate::Generator;
@@ -50,7 +52,6 @@ impl <G: Generator> World<G> {
         let mut blocks: Map<Location, (Block, Set<Face>)> = Map::default();
 
         for (i, chunk) in Self::around(index).map(|index| &self.chunks[&index]).enumerate() {
-            println!("{}", i);
             let dz = (i / 3) * CHUNK_SIZE;
             let dx = (i % 3) * CHUNK_SIZE;
 
@@ -59,7 +60,7 @@ impl <G: Generator> World<G> {
                 let mut faces = Face::all();
 
                 // Check for collisions with existing blocks
-                for (l2, me, other) in l.around() {
+                for (l2, me, other) in l1.around() {
                     if let Some(block) = blocks.get_mut(&l2) {
                         faces.remove(&me);
                         block.1.remove(&other);
@@ -74,6 +75,7 @@ impl <G: Generator> World<G> {
         // Merged chunk has coordinates of lower-left
         let index = Index(index.0 - 1, index.1 - 1);
         blocks.retain(|_, (_, faces)| !faces.is_empty());
+        println!("{:#?}", blocks);
         Mesh {
             index,
             blocks: blocks.into_iter()
@@ -83,7 +85,7 @@ impl <G: Generator> World<G> {
     }
 
     pub fn connect(&mut self, player: usize) -> Mesh {
-        let start = Position::default();
+        let start = Position(glm::vec3(0.0, 0.0, 0.0));
         let index = Self::to_index(start);
         self.positions.insert(player, start);
         self.load_around(index)

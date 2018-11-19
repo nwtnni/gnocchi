@@ -1,4 +1,4 @@
-const CHUNK_SIZE = 6;
+const CHUNK_SIZE = 48;
 var CURRENT_CHUNK;
 var RELOAD = false;
 var POSITION = [0.0, 0.0, 0.0];
@@ -18,7 +18,7 @@ function getFrameMatrix() {
     var R = mat4.create();
     var F = mat4.create();
     var T = mat4.create();
-    var t = vec3.fromValues(-POSITION[0], POSITION[1], POSITION[2]);
+    var t = vec3.fromValues(POSITION[0], POSITION[1], -POSITION[2]);
     var dirVec = vec3.fromValues(DIRECTION[0], DIRECTION[1], DIRECTION[2]);
     var origVec = vec3.fromValues(0, 0, -1);
     mat4.fromTranslation(T, t);

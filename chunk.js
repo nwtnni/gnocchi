@@ -127,8 +127,6 @@ class Chunk {
             const x = location[0] + dx;
             const y = location[1];
             const z = location[2] + dz;
-
-            // TODO: is this flip necessary?
             this.createBlock(vertices, x, y, z, material, faces);
         }
         return {
