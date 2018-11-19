@@ -12,7 +12,7 @@ enum_number! (
 
 #[derive(Serialize, Deserialize)]
 #[derive(Copy, Clone, Debug, PartialEq, Eq)]
-pub struct Block(Material);
+pub struct Block(pub Material);
 
 impl Block {
     pub fn air() -> Self { Block(Material::Air) }
