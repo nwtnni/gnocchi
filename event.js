@@ -11,6 +11,22 @@ $(function() {
 
     connection.onmessage = function(m) {
         console.log("Received message: " + JSON.parse(m.data));
+        var data = JSON.parse(m.data);
+        switch (data.type) {
+            case "ChunkData":
+                var chunkData = new ChunkData(data.chunkID, data.materials);
+                currChunk = chunkData.getChunk();
+                break;
+            case "BlockData":
+                var block = new Block(data.block.material, data.block.location);
+                var blockData = new BlockData(data.chunkID, block);
+                // TODO add diff-y things here
+                break;
+            case "EntityData":
+                var entityData = new EntityData(data.id, data.position);
+                // TODO
+                break;
+        }
     };
 
     connection.onclose = function() {

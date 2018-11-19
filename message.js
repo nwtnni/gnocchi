@@ -11,10 +11,26 @@ class ChunkData {
         this.chunk_id = chunk_id;
         this.blocks = blocks;
     }
+
+    getChunk() {
+        return new Chunk(Math.pow(this.blocks.size, 0.5), this.blocks);
+    }
+
+    getID() {
+        return this.chunk_id;
+    }
+
+    blockDiff(blockData) {
+        if (this.chunk_id === blockData.chunk_id) {
+            var block = blockData.block;
+            
+        }
+    }
 }
 
 class BlockData {
-    constructor(block) {
+    constructor(chunk_id, block) {
+        this.chunk_id = chunk_id;
         this.block = block;
     }
 }
