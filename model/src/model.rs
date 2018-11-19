@@ -41,19 +41,19 @@ impl <G: Generator> World<G> {
         AROUND.iter().map(move |(dx, dz)| Index(x + dx, z + dz))
     }
 
-    pub fn load_around(&mut self, position: Position) -> Vec<Index> {
+    fn load_around(&mut self, position: Position) -> Vec<Index> {
         self.around(position)
             .inspect(|index| { self.lazy_load(*index); })
             .collect()
     }
 
-    pub fn lazy_load_around(&mut self, position: Position) -> Vec<Index> {
+    fn lazy_load_around(&mut self, position: Position) -> Vec<Index> {
         self.around(position)
             .filter_map(|index| self.lazy_load(index))
             .collect()
     }
 
-    pub fn get_chunk(&mut self, index: Index) -> Chunk {
+    pub fn get_chunk(&self, index: Index) -> Chunk {
         self.chunks[&index].clone()
     }
 
@@ -67,11 +67,17 @@ impl <G: Generator> World<G> {
         self.positions.remove(&player);
     }
 
-    pub fn try_move(&mut self, player: usize, dir: Direction, magnitude: f32) -> Position {
+    pub fn try_move(
+        &mut self,
+        player: usize,
+        direction: Direction,
+        magnitude: f32
+    ) -> (Position, Vec<Index>) {
         let previous = self.positions[&player];
         // TODO: collision checking here
-        let next = previous.translate(dir, magnitude);
+        let next = previous.translate(direction, magnitude);
+        let loaded = self.lazy_load_around(next);
         self.positions.insert(player, next);
-        next
+        (next, loaded)
     }
 }

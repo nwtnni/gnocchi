@@ -37,8 +37,17 @@ impl Handler<Connect> for Server {
     fn handle(&mut self, connect: Connect, _: &mut Context<Self>) -> Self::Result {
         let player = self.connected.len();
         println!("Player {} connecting...", player);
+        for index in self.world.connect(player) {
+            println!("Sending chunk {:?} to player {}", index, player);
+            let chunk = self.world.get_chunk(index);
+            let chunk = message::Outgoing::ChunkData {
+                index: chunk.index, materials: chunk.blocks,
+            };
+            connect.addr
+                .do_send(chunk)
+                .expect("[INTERNAL ERROR]: failed to send chunk");
+        }
         self.connected.insert(player, connect.addr);
-        self.world.connect(player);
         player 
     }
 }
@@ -58,11 +67,24 @@ impl Handler<Incoming> for Server {
     fn handle(&mut self, Incoming(player, message): Incoming, _: &mut Context<Self>) -> Self::Result {
         match message {
         | message::Incoming::MoveData { direction } => {
-            let next = self.world.try_move(player, direction, 0.01);
-            let response = message::Outgoing::EntityData { id: player, position: next };
-            self.connected[&player]
-                .do_send(response)
-                .expect("[INTERNAL ERROR]: failed to send response");
+            let (next, loaded) = self.world.try_move(player, direction, 0.01);
+            let address = &self.connected[&player];
+            for index in loaded {
+                let chunk = self.world.get_chunk(index);
+                let chunk = message::Outgoing::ChunkData {
+                    index: chunk.index, materials: chunk.blocks,
+                };
+                address
+                    .do_send(chunk)
+                    .expect("[INTERNAL ERROR]: failed to send chunk");
+            }
+            let entity = message::Outgoing::EntityData {
+                id: player,
+                position: next
+            };
+            address
+                .do_send(entity)
+                .expect("[INTERNAL ERROR]: failed to send entity data");
         },
         | _ => unimplemented!(),
         }
