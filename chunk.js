@@ -10,10 +10,12 @@ class Chunk {
 
     // Create a single vertex and push it onto [vertices] and [indices] lists
     createVertex(vertices, indices, vertex, u, v) {
-        indices.push(Math.floor(vertices.length / 5));
+        indices.push(Math.floor(parseFloat(vertices.length / 5)));
+
         for (var i = 0; i < vertex.length; i++) {
             vertices.push(vertex[i]);
         }
+        
         vertices.push(u);
         vertices.push(v);
     }
@@ -42,11 +44,13 @@ class Chunk {
         const br = [x2, z, -y2];
         const tl = [x1, z+1, -y1];
         const tr = [x2, z+1, -y2];
+        
         this.createSquare(vertices, indices, bl, br, tl, tr);
     }
 
     // Create a horizontal tile from two corners [x1, y1] and [x2, y2]
     createFloor(vertices, indices, x1, y1, x2, y2, z) {
+        
         const bl = [x1, z, -y1];
         const br = [x2, z, -y1];
         const tl = [x1, z, -y2];
@@ -54,11 +58,11 @@ class Chunk {
         this.createSquare(vertices, indices, bl, br, tl, tr);
     }
 
-    createBlock(vertices, indices, x, y, z) { // add z
-        this.createWall(vertices, indices, x, y, x + 1, y);
-        this.createWall(vertices, indices, x, y, x, y + 1);
-        this.createWall(vertices, indices, x + 1, y, x + 1, y + 1);
-        this.createWall(vertices, indices, x, y + 1, x + 1, y + 1);
+    createBlock(vertices, indices, x, y, z) { // add z        
+        this.createWall(vertices, indices, x, y, x + 1, y, z);
+        this.createWall(vertices, indices, x, y, x, y + 1, z);
+        this.createWall(vertices, indices, x + 1, y, x + 1, y + 1, z);
+        this.createWall(vertices, indices, x, y + 1, x + 1, y + 1, z);
         this.createFloor(vertices, indices, x, y, x+1, y+1, z);
         this.createFloor(vertices, indices, x, y, x+1, y+1, z+1);
     }
@@ -70,10 +74,11 @@ class Chunk {
 
         for (var i = 0.0; i < data.length; i++) {
             if(data[i] === 1) {
-                var z = Math.floor(i/n);
-                var y = Math.floor(i/(Math.pow(n, 2)));
-                var x = i - n*z - Math.pow(n, 2)*y;
-
+                var z = Math.floor(parseFloat(i / n));
+                var y = Math.floor(parseFloat(i / (Math.pow(n, 2))));
+                var x = i - n * z - Math.pow(n, 2) * y;
+                
+                
                 this.createBlock(vertices, indices, x, y, z);
             }
         }
