@@ -15,8 +15,16 @@ function getProjMatrix() {
 }
 
 function getFrameMatrix() {
-    var t = vec3.fromValues(-POSITION[0], POSITION[1], -POSITION[2]);
+    var R = mat4.create();
+    var F = mat4.create();
     var T = mat4.create();
+    var t = vec3.fromValues(-POSITION[0], POSITION[1], POSITION[2]);
+    var dirVec = vec3.fromValues(DIRECTION[0], DIRECTION[1], DIRECTION[2]);
+    var origVec = vec3.fromValues(0, 0, -1);
     mat4.fromTranslation(T, t);
-    return T;
+    var angle = vec3.angle(dirVec, origVec);
+    mat4.fromRotation(R, angle, vec3.fromValues(0.0, 0.0, 0.0));
+
+    mat4.multiply(F, R, T);
+    return F;
 }

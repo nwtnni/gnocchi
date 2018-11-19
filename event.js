@@ -60,9 +60,9 @@ $(function() {
         case 83: // S
             event.preventDefault();
             direction = [-DIRECTION[0], -DIRECTION[1], -DIRECTION[2]];
+            
             break;
         case 68: // D
-            event.preventDefault(); 
             event.preventDefault();
             var dirVec = vec3.create();
             var posVec = vec3.create();
@@ -72,7 +72,6 @@ $(function() {
             vec3.rotateY(rotVec, dirVec, posVec, 3 * Math.PI/2);
             vec3.normalize(rotVec, rotVec);
             direction = [rotVec[0], rotVec[1], rotVec[2]];
-            console.log(direction);
             break;
         case 9:  // Tab
         case 81: // Q
