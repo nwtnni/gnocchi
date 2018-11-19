@@ -1,22 +1,22 @@
-//$(function() {
+$(function() {
 
-    // const protocol = window.location.protocol === 'https:' && 'wss://' || 'ws://';
-    // const host = window.location.host + 'localhost:8080/ws/';
-    // var connection = new WebSocket(protocol + host);
-    // console.log(connection);
+    const protocol = window.location.protocol === 'https:' && 'wss://' || 'ws://';
+    const host = 'localhost:8080/ws/';
+    var connection = new WebSocket(protocol + host);
+    console.log(connection);
 
-    // connection.onopen = function() {
-    //     console.log("Connected.");
-    // };
+    connection.onopen = function() {
+        console.log("Connected.");
+    };
 
-    // connection.onmessage = function(m) {
-    //     console.log("Received message: " + m.data);
-    // };
+    connection.onmessage = function(m) {
+        console.log("Received message: " + JSON.parse(m.data));
+    };
 
-    // connection.onclose = function() {
-    //     console.log("Disconnected.");
-    //     connection = null;
-    // };
+    connection.onclose = function() {
+        console.log("Disconnected.");
+        connection = null;
+    };
 
     // window.onkeydown = function (event) {
     //     console.log(event);
@@ -51,7 +51,7 @@
     //         break;
     //     }
     // };
-//});
+});
 var data = [0, 0, 0, 0, 0, 0, 0, 1];
 var chunk = new Chunk(2.0, data);
 

@@ -65,22 +65,22 @@ queue.on("complete",
                 };
 
                 const chunkMesh = chunk.chunkMesh();
-                var vertexData = [
-                    -1.0, -1.0, -10.0,
-                    0.0, 0.0,
-                    1.0, -1.0, -10.0,
-                    1.0, 0.0,
-                    1.0, 1.0, -10.0,
-                    1.0, 1.0,
-                    -1.0, 1.0, -10.0,
-                    0.0, 1.0,
-                ];
+                // var vertexData = [
+                //     -1.0, -1.0, -10.0,
+                //     0.0, 0.0,
+                //     1.0, -1.0, -10.0,
+                //     1.0, 0.0,
+                //     1.0, 1.0, -10.0,
+                //     1.0, 1.0,
+                //     -1.0, 1.0, -10.0,
+                //     0.0, 1.0,
+                // ];
 
-                var indexData = [
-                    0, 1, 2, 0, 2, 3
-                ];
-                chunkMesh.vertices = vertexData;
-                chunkMesh.indices = indexData;
+                // var indexData = [
+                //     0, 1, 2, 0, 2, 3
+                // ];
+                // chunkMesh.vertices = vertexData;
+                // chunkMesh.indices = indexData;
                 program.chunk = createShape(
                     gl,
                     chunkMesh.vertices,
