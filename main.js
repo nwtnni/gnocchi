@@ -11,7 +11,7 @@ const vert = `
     varying vec2 geom_texCoord;
 
     void main() {
-        gl_Position = projection * vec4(vert_position, 1.0);
+        gl_Position = projection * frame * vec4(vert_position, 1.0);
        // gl_Position = vec4(vert_position, 1.0);
         geom_texCoord = vert_texCoord;
     }`;
