@@ -137,7 +137,7 @@ queue.on("complete",
 queue.loadManifest([
     {
         id: "wall",
-        src: "wall.jpg"
+        src: "texture.jpg"
     }
 //     {
 //         id: "floor",

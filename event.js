@@ -69,5 +69,5 @@ $(function() {
     // };
 });
 
-var data = [1, 1, 1, 1, 1, 1, 1, 1];
+var data = [1, 3, 1, 0, 1, 1, 1, 1];
 var chunk = new Chunk(2, [0, -10], data);
