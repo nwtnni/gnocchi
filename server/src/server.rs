@@ -38,6 +38,7 @@ impl Handler<Connect> for Server {
         let player = self.connected.len();
         println!("Player {} connecting...", player);
         let chunk = self.world.connect(player);
+        println!("Sending chunk {:?}", chunk.index);
         let chunk = message::Outgoing::ChunkData {
             index: chunk.index, materials: chunk.blocks,
         };

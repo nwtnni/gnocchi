@@ -1,5 +1,7 @@
 use std::collections::HashMap;
 
+use glm;
+
 use constants::{CHUNK_SIZE, CHUNK_AREA, CHUNK_VOLUME};
 use data::*;
 use generate::Generator;
@@ -19,7 +21,7 @@ pub struct World<G: Generator> {
     /// Chunk generator
     generator: G,
 
-    /// Player positions  
+    /// Player positions
     positions: HashMap<usize, Position>,
 }
 
@@ -63,13 +65,11 @@ impl <G: Generator> World<G> {
                 for y in 0..CHUNK_SIZE {
                     for z in 0..CHUNK_SIZE {
                         for x in 0..CHUNK_SIZE {
-                            let rel_index = x
-                                + (CHUNK_SIZE * z)
-                                + (CHUNK_AREA * y);
-                            let abs_index = (x + dx)
-                                + (CHUNK_SIZE * (z + dz)) 
-                                + (CHUNK_AREA * y);
-                            blocks[abs_index] = chunk.blocks[rel_index];
+                            let block = chunk.get(Location(x, y, z));
+                            let location = (x + dx)
+                                + ((z + dz) * CHUNK_SIZE * 3)
+                                + (y * CHUNK_AREA * 9);
+                            blocks[location] = block;
                         }
                     }
                 }

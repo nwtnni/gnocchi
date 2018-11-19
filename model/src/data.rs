@@ -28,7 +28,7 @@ pub struct Chunk {
 
 impl Chunk {
     fn index(Location(x, y, z): Location) -> usize {
-        x + CHUNK_SIZE * z + CHUNK_AREA * y
+        x + (CHUNK_SIZE * z) + (CHUNK_AREA * y)
     }
 
     pub fn get(&self, location: Location) -> Block {
