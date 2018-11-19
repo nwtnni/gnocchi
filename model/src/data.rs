@@ -2,6 +2,10 @@ use std::collections::{HashSet as Set, HashMap as Map};
 
 use glm;
 
+const FACES: [Face; 6] = [
+    Face::W, Face::S, Face::E, Face::N, Face::L, Face::U,
+];
+
 enum_number! (
     Face {
         W = 0,
@@ -15,14 +19,7 @@ enum_number! (
 
 impl Face {
     pub fn all() -> Set<Face> {
-        let mut set = Set::with_capacity(6);
-        set.insert(Face::W);
-        set.insert(Face::S);
-        set.insert(Face::E);
-        set.insert(Face::N);
-        set.insert(Face::L);
-        set.insert(Face::U);
-        set
+        FACES.iter().cloned().collect()
     }
 }
 
@@ -74,19 +71,19 @@ pub struct Index(pub isize, pub isize);
 pub struct Location(pub usize, pub usize, pub usize);
 
 impl Location {
-    pub fn facing(&self, rhs: &Self) -> Option<(Face, Face)> {
-        let dx = rhs.0 as isize - self.0 as isize;
-        let dy = rhs.1 as isize - self.1 as isize;
-        let dz = rhs.2 as isize - self.2 as isize;
-        match (dx, dy, dz) {
-        | (-1,  0,  0) => Some((Face::W, Face::E)),
-        | ( 1,  0,  0) => Some((Face::E, Face::W)),
-        | ( 0, -1,  0) => Some((Face::L, Face::U)),
-        | ( 0,  1,  0) => Some((Face::U, Face::L)),
-        | ( 0,  0, -1) => Some((Face::N, Face::S)),
-        | ( 0,  0,  1) => Some((Face::S, Face::N)),
-        | _          => None,
+    fn next(self, face: Face) -> (Location, Face, Face) {
+        match face {
+        | Face::W => (Location(self.0 - 1, self.1, self.2), Face::W, Face::E),
+        | Face::S => (Location(self.0, self.1, self.2 + 1), Face::S, Face::N),
+        | Face::E => (Location(self.0 + 1, self.1, self.2), Face::E, Face::W),
+        | Face::N => (Location(self.0, self.1, self.2 - 1), Face::N, Face::S),
+        | Face::L => (Location(self.0, self.1 - 1, self.2), Face::L, Face::U),
+        | Face::U => (Location(self.0, self.1 + 1, self.2), Face::U, Face::L),
         }
+    }
+
+    pub fn around(self) -> impl Iterator<Item = (Location, Face, Face)> {
+        FACES.iter().map(move |face| self.next(*face)) 
     }
 }
 

@@ -50,6 +50,7 @@ impl <G: Generator> World<G> {
         let mut blocks: Map<Location, (Block, Set<Face>)> = Map::default();
 
         for (i, chunk) in Self::around(index).map(|index| &self.chunks[&index]).enumerate() {
+            println!("{}", i);
             let dz = (i / 3) * CHUNK_SIZE;
             let dx = (i % 3) * CHUNK_SIZE;
 
@@ -58,10 +59,10 @@ impl <G: Generator> World<G> {
                 let mut faces = Face::all();
 
                 // Check for collisions with existing blocks
-                for (l2, b2) in &mut blocks {
-                    if let Some((me, other)) = l1.facing(l2) {
+                for (l2, me, other) in l.around() {
+                    if let Some(block) = blocks.get_mut(&l2) {
                         faces.remove(&me);
-                        b2.1.remove(&other);
+                        block.1.remove(&other);
                     }
                 }
 

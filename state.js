@@ -1,4 +1,4 @@
-const CHUNK_SIZE = 196;
+const CHUNK_SIZE = 6;
 var CURRENT_CHUNK;
 var RELOAD = false;
 var POSITION = [0.0, 0.0, 0.0];
