@@ -10,8 +10,8 @@ $(function() {
     };
 
     connection.onmessage = function(m) {
-        console.log("Received message: " + JSON.parse(m.data));
         var data = JSON.parse(m.data);
+        console.log("Received message: " + data.type);
         switch (data.type) {
             case "ChunkData":
                 var chunkData = new ChunkData(data.chunkID, data.materials);
@@ -25,7 +25,8 @@ $(function() {
                 break;
             case "EntityData":
                 var entityData = new EntityData(data.id, data.position);
-                entityLocation = entityData.coordinate;
+                POSITION = entityData.coordinate;
+                console.log(POSITION);
                 break;
         }
     };
@@ -35,37 +36,35 @@ $(function() {
         connection = null;
     };
 
-    // window.onkeydown = function (event) {
-    //     console.log(event);
-    //     event.preventDefault();
+    window.onkeydown = function (event) {
+        var direction = null;
 
-    //     switch (event.key) {
-    //     case "w":
-    //         console.log("North");
-    //         connection.send("N");
-    //         break;
-    //     case "a":
-    //         console.log("West");
-    //         connection.send("W");
-    //         break;
-    //     case "s":
-    //         console.log("South");
-    //         connection.send("S");
-    //         break;
-    //     case "d":
-    //         console.log("East");
-    //         connection.send("E");
-    //         break;
-    //     case "q":
-    //         console.log("Down");
-    //         connection.send("D");
-    //         break;
-    //     case "e":
-    //         console.log("Up");
-    //         connection.send("U");
-    //         break;
-    //     default:
-    //         break;
-    //     }
-    // };
+        switch (event.which) {
+        case 38: // Up
+        case 87: // W
+            event.preventDefault();
+            direction = DIRECTION;
+            break;
+        case 40: // Down
+        case 83: // S
+            event.preventDefault();
+            direction = [-DIRECTION[0], -DIRECTION[1], -DIRECTION[2]];
+            break;
+        case 9:  // Tab
+        case 81: // Q
+            event.preventDefault();
+            direction = [0.0, 1.0, 0.0];
+            break;
+        case 16: // Shift
+        case 69: // E 
+            event.preventDefault();
+            direction = [0.0, -1.0, 0.0];
+            break;
+        default:
+            return;
+        }
+
+        const move = new MoveData(direction);
+        connection.send(JSON.stringify(move));
+    };
 });

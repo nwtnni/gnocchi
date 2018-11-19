@@ -65,7 +65,7 @@ impl Handler<Incoming> for Server {
     fn handle(&mut self, Incoming(player, message): Incoming, _: &mut Context<Self>) -> Self::Result {
         match message {
         | message::Incoming::MoveData { direction } => {
-            let (next, loaded) = self.world.try_move(player, direction, 0.01);
+            let (next, loaded) = self.world.try_move(player, direction, 1.0);
             let address = &self.connected[&player];
             if let Some(chunk) = loaded {
                 let chunk = message::Outgoing::ChunkData {
