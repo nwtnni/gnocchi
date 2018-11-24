@@ -1,4 +1,3 @@
-const CHUNK_SIZE = 48;
 var CURRENT_CHUNK;
 var RELOAD = false;
 var POSITION = [0.0, 0.0, 0.0];

@@ -9,11 +9,12 @@ class Block {
 class ChunkData {
     constructor(data) {
         this.index = data.index;
+        this.size = data.size;
         this.blocks = data.blocks;
     }
 
     getChunk() {
-        return new Chunk(CHUNK_SIZE, this.index, this.blocks);
+        return new Chunk(this.size, this.index, this.blocks);
     }
 
     getIndex() {

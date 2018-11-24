@@ -77,6 +77,7 @@ impl <G: Generator> World<G> {
         blocks.retain(|_, (_, faces)| !faces.is_empty());
         Mesh {
             index,
+            size: CHUNK_SIZE * 3,
             blocks: blocks.into_iter()
                 .map(|(l, (m, f))| (l, m, f))
                 .collect(),
