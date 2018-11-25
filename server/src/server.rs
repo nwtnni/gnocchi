@@ -1,7 +1,7 @@
 use std::collections::HashMap;
 
 use actix::prelude::*;
-use model::{World, Height};
+use model::{World, Height, data};
 use message;
 
 #[derive(Message)]
@@ -73,7 +73,9 @@ impl Handler<Incoming> for Server {
             }
             let entity = message::Outgoing::EntityData {
                 id: player,
-                position: next
+                position: next,
+                velocity: data::Velocity::default(),
+                acceleration: data::Acceleration::default(),
             };
             address
                 .do_send(entity)

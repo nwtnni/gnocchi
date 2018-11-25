@@ -2,6 +2,8 @@ var CHUNKS = [];
 var RELOAD = false;
 var POSITION = [0.0, 0.0, 0.0];
 var DIRECTION = [0.0, 0.0, -1.0];
+var VELOCITY = [0.0, 0.0, 0.0];
+var ACCELERATION = [0.0, 0.0, 0.0];
 
 function getProjMatrix() {
     var fov = 80.0;

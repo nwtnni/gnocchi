@@ -135,11 +135,27 @@ impl Default for Direction {
 #[derive(Copy, Clone, Debug)]
 pub struct Position(pub glm::Vec3);
 
-impl Default for Position {
-    fn default() -> Self {
-        Position(glm::vec3(0.0, 0.0, 0.0))
+#[derive(Serialize, Deserialize)]
+#[derive(Copy, Clone, Debug)]
+pub struct Velocity(pub glm::Vec3);
+
+#[derive(Serialize, Deserialize)]
+#[derive(Copy, Clone, Debug)]
+pub struct Acceleration(pub glm::Vec3);
+
+macro_rules! impl_default {
+    ($struct:ident) => {
+        impl Default for $struct {
+            fn default() -> Self {
+                $struct(glm::vec3(0.0, 0.0, 0.0))
+            }
+        }
     }
 }
+
+impl_default!(Position);
+impl_default!(Velocity);
+impl_default!(Acceleration);
 
 impl Position {
     pub fn translate(self, Direction(dir): Direction, magnitude: f32) -> Self {

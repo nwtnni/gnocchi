@@ -22,6 +22,8 @@ pub enum Outgoing {
     EntityData {
         id: usize,
         position: data::Position,
+        velocity: data::Velocity,
+        acceleration: data::Acceleration,
     },
 }
 

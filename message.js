@@ -43,6 +43,8 @@ class EntityData {
     constructor(id, coordinate) {
         this.id = id;
         this.coordinate = coordinate;
+        this.velocity = velocity;
+        this.acceleration = acceleration;
     }
 }
 
