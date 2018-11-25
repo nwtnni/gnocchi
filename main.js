@@ -68,18 +68,15 @@ queue.on("complete",
             // During update loop
             function(gl, program) {
 
-                if (RELOAD) {
-                    RELOAD = false;
-                    while (CHUNKS.length > 0) {
-                        const chunk = CHUNKS.pop();
-                        const mesh = chunk.chunkMesh();
-                        program.chunk = program.chunk ? program.chunk : [];
-                        program.chunk.push(createShape(
-                            gl,
-                            mesh.vertices,
-                            mesh.indices
-                        ));
-                    }
+                while (CHUNKS.length > 0) {
+                    const chunk = CHUNKS.pop();
+                    const mesh = chunk.chunkMesh();
+                    program.chunk = program.chunk ? program.chunk : [];
+                    program.chunk.push(createShape(
+                        gl,
+                        mesh.vertices,
+                        mesh.indices
+                    ));
                 }
 
                 // Sky color

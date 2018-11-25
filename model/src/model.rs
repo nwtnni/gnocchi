@@ -29,12 +29,13 @@ impl <G: Generator> World<G> {
 
     fn to_index(position: Position) -> Index {
         let scale = CHUNK_SIZE as f32;
-        let x = (position.0.x / scale).floor() as isize;
-        let y = (position.0.z / scale).floor() as isize;
+        let x = (position.0.x / scale).round() as isize;
+        let y = (position.0.z / scale).round() as isize;
         Index(x, y)
     }
 
-    fn around(index: Index) -> impl Iterator<Item = Index> {
+    fn around(position: Position) -> impl Iterator<Item = Index> {
+        let index = Self::to_index(position);
         AROUND.iter().map(move |(dx, dz)| Index(index.0 + dx, index.1 + dz))
     }
 
@@ -49,10 +50,9 @@ impl <G: Generator> World<G> {
 
     pub fn connect(&mut self, player: usize) -> Vec<Mesh> {
         let start = Position(glm::vec3(0.0, 0.0, 0.0));
-        let index = Self::to_index(start);
         self.positions.insert(player, start);
         let mut meshes = Vec::with_capacity(9);
-        for index in Self::around(index) {
+        for index in Self::around(start) {
             self.lazy_load(index);
             meshes.push(Mesh::from(&self.chunks[&index]));
         }
@@ -73,9 +73,8 @@ impl <G: Generator> World<G> {
         let prev = self.positions[&player];
         let next = prev.translate(direction, magnitude);
         self.positions.insert(player, next);
-        let index = Self::to_index(next);
         let mut meshes = Vec::new();
-        for index in Self::around(index) {
+        for index in Self::around(next) {
             if self.lazy_load(index) {
                 meshes.push(Mesh::from(&self.chunks[&index]));
             }
