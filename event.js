@@ -18,7 +18,7 @@ $(function() {
         switch (data.type) {
             case "ChunkData":
                 var chunkData = new ChunkData(data);
-                CURRENT_CHUNK = chunkData.getChunk();
+                CHUNKS.push(chunkData.getChunk());
                 RELOAD = true;
                 break;
             case "BlockData":

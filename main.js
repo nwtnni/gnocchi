@@ -70,12 +70,16 @@ queue.on("complete",
 
                 if (RELOAD) {
                     RELOAD = false;
-                    const chunkMesh = CURRENT_CHUNK.chunkMesh();
-                    program.chunk = createShape(
-                        gl,
-                        chunkMesh.vertices,
-                        chunkMesh.indices
-                    );
+                    while (CHUNKS.length > 0) {
+                        const chunk = CHUNKS.pop();
+                        const mesh = chunk.chunkMesh();
+                        program.chunk = program.chunk ? program.chunk : [];
+                        program.chunk.push(createShape(
+                            gl,
+                            mesh.vertices,
+                            mesh.indices
+                        ));
+                    }
                 }
 
                 // Sky color
@@ -99,7 +103,9 @@ queue.on("complete",
                 gl.uniform1i(program.textureLocation, 0);
 
                 if (program.chunk) {
-                    program.draw(gl, program.chunk);
+                    for (var i = 0; i < program.chunk.length; i++) {
+                        program.draw(gl, program.chunk[i]);
+                    }
                 }
             }
         );

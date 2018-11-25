@@ -1,4 +1,4 @@
-var CURRENT_CHUNK;
+var CHUNKS = [];
 var RELOAD = false;
 var POSITION = [0.0, 0.0, 0.0];
 var DIRECTION = [0.0, 0.0, -1.0];

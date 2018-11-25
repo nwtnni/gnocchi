@@ -1,3 +1,8 @@
+use std::collections::HashMap as Map;
+use std::hash::Hash;
+
+use serde::ser::*;
+
 #[macro_use]
 macro_rules! enum_number {
     ($name:ident { $($variant:ident = $value:expr, )* }) => {
@@ -49,4 +54,18 @@ macro_rules! enum_number {
             }
         }
     }
+}
+
+pub fn serialize_map_as_vec<S, K, L, R>(map: &Map<K, (L, R)>, serializer: S) -> Result<S::Ok, S::Error>
+where
+    S: Serializer,
+    K: Serialize + Hash + Eq,
+    L: Serialize,
+    R: Serialize,
+{
+    let mut seq = serializer.serialize_seq(Some(map.len()))?;
+    for (k, (l, r)) in map {
+        seq.serialize_element(&(k, l, r))?;
+    }
+    seq.end()
 }

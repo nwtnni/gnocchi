@@ -1,4 +1,4 @@
-use std::collections::{HashSet as Set, HashMap as Map};
+use std::collections::HashMap as Map;
 
 use glm;
 
@@ -27,12 +27,6 @@ pub struct World<G: Generator> {
 
 impl <G: Generator> World<G> {
 
-    fn lazy_load(&mut self, index: Index) {
-        if !self.chunks.contains_key(&index) {
-            self.chunks.insert(index, self.generator.generate(index));
-        }
-    }
-
     fn to_index(position: Position) -> Index {
         let scale = CHUNK_SIZE as f32;
         let x = (position.0.x / scale).floor() as isize;
@@ -44,51 +38,25 @@ impl <G: Generator> World<G> {
         AROUND.iter().map(move |(dx, dz)| Index(index.0 + dx, index.1 + dz))
     }
 
-    fn load_around(&mut self, index: Index) -> Mesh {
-        for index in Self::around(index) {
-            self.lazy_load(index);
-        }
-
-        let mut blocks: Map<Location, (Block, Set<Face>)> = Map::default();
-
-        for (i, chunk) in Self::around(index).map(|index| &self.chunks[&index]).enumerate() {
-            let dz = (i / 3) * CHUNK_SIZE;
-            let dx = (i % 3) * CHUNK_SIZE;
-
-            for (l, b1) in &chunk.blocks {
-                let l1 = Location(l.0 + dx, l.1, l.2 + dz);
-                let mut faces = Face::all();
-
-                // Check for collisions with existing blocks
-                for (l2, me, other) in l1.around() {
-                    if let Some(block) = blocks.get_mut(&l2) {
-                        faces.remove(&me);
-                        block.1.remove(&other);
-                    }
-                }
-
-                // Insert new face
-                blocks.insert(l1, (*b1, faces));
-            }
-        }
-
-        // Merged chunk has coordinates of lower-left
-        let index = Index(index.0 - 1, index.1 - 1);
-        blocks.retain(|_, (_, faces)| !faces.is_empty());
-        Mesh {
-            index,
-            size: CHUNK_SIZE * 3,
-            blocks: blocks.into_iter()
-                .map(|(l, (m, f))| (l, m, f))
-                .collect(),
+    fn lazy_load<'a>(&'a mut self, index: Index) -> bool {
+        if !self.chunks.contains_key(&index) {
+            self.chunks.insert(index, self.generator.generate(index));
+            true
+        } else {
+            false
         }
     }
 
-    pub fn connect(&mut self, player: usize) -> Mesh {
+    pub fn connect(&mut self, player: usize) -> Vec<Mesh> {
         let start = Position(glm::vec3(0.0, 0.0, 0.0));
         let index = Self::to_index(start);
         self.positions.insert(player, start);
-        self.load_around(index)
+        let mut meshes = Vec::with_capacity(9);
+        for index in Self::around(index) {
+            self.lazy_load(index);
+            meshes.push(Mesh::from(&self.chunks[&index]));
+        }
+        meshes
     }
 
     pub fn disconnect(&mut self, player: usize) {
@@ -100,17 +68,18 @@ impl <G: Generator> World<G> {
         player: usize,
         direction: Direction,
         magnitude: f32
-    ) -> (Position, Option<Mesh>) {
+    ) -> (Position, Vec<Mesh>) {
         // TODO: collision checking here
         let prev = self.positions[&player];
         let next = prev.translate(direction, magnitude);
         self.positions.insert(player, next);
-        let prev_index = Self::to_index(prev);
-        let next_index = Self::to_index(next);
-        if prev_index != next_index {
-            (next, Some(self.load_around(next_index)))
-        } else {
-            (next, None)
+        let index = Self::to_index(next);
+        let mut meshes = Vec::new();
+        for index in Self::around(index) {
+            if self.lazy_load(index) {
+                meshes.push(Mesh::from(&self.chunks[&index]));
+            }
         }
+        (next, meshes)
     }
 }

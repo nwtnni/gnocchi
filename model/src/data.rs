@@ -2,6 +2,9 @@ use std::collections::{HashSet as Set, HashMap as Map};
 
 use glm;
 
+use constants::CHUNK_SIZE;
+use util;
+
 const FACES: [Face; 6] = [
     Face::W, Face::S, Face::E, Face::N, Face::L, Face::U,
 ];
@@ -44,7 +47,37 @@ impl Block {
 pub struct Mesh {
     pub index: Index,
     pub size: usize,
-    pub blocks: Vec<(Location, Block, Set<Face>)>,
+    #[serde(serialize_with = "util::serialize_map_as_vec")]
+    pub blocks: Map<Location, (Block, Set<Face>)>,
+}
+
+impl <'a> From<&'a Chunk> for Mesh {
+    fn from(chunk: &Chunk) -> Self {
+
+        let mut blocks: Map<Location, (Block, Set<Face>)> = Map::default();
+
+        for (l1, b1) in &chunk.blocks {
+            let mut faces = Face::all();
+
+            // Check for collisions with existing blocks
+            for (l2, me, other) in l1.around() {
+                if let Some(block) = blocks.get_mut(&l2) {
+                    faces.remove(&me);
+                    block.1.remove(&other);
+                }
+            }
+
+            // Insert new face
+            blocks.insert(*l1, (*b1, faces));
+        }
+
+        blocks.retain(|_, (_, faces)| !faces.is_empty());
+        Mesh {
+            index: chunk.index,
+            size: CHUNK_SIZE,
+            blocks,
+        }
+    }
 }
 
 #[derive(Clone, Debug)]
