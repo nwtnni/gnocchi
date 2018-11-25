@@ -27,8 +27,8 @@ $(function() {
                 CURRENT_CHUNK.blockDiff(blockData);
                 break;
             case "EntityData":
-                var entityData = new EntityData(data.id, data.position);
-                POSITION = entityData.coordinate;
+                var entityData = new EntityData(data);
+                POSITION = entityData.position;
                 console.log(POSITION);
                 break;
         }

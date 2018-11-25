@@ -37,7 +37,17 @@ impl Handler<Connect> for Server {
     fn handle(&mut self, connect: Connect, _: &mut Context<Self>) -> Self::Result {
         let player = self.connected.len();
         println!("Player {} connecting...", player);
-        for mesh in self.world.connect(player) {
+        let (position, meshes) = self.world.connect(player);
+        let entity = message::Outgoing::EntityData {
+            id: player,
+            position,        
+            velocity: data::Velocity::default(),
+            acceleration: data::Acceleration::default(),
+        };
+        connect.addr
+            .do_send(entity)
+            .expect("[INTERNAL ERROR]: failed to send entity data");
+        for mesh in meshes {
             let mesh = message::Outgoing::ChunkData(mesh);
             connect.addr
                 .do_send(mesh)

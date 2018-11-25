@@ -40,11 +40,11 @@ class BlockData {
 }
 
 class EntityData {
-    constructor(id, coordinate) {
-        this.id = id;
-        this.coordinate = coordinate;
-        this.velocity = velocity;
-        this.acceleration = acceleration;
+    constructor(data) {
+        this.id = data.id;
+        this.position = data.position;
+        this.velocity = data.velocity;
+        this.acceleration = data.acceleration;
     }
 }
 
