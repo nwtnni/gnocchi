@@ -92,6 +92,8 @@ impl StreamHandler<ws::Message, ws::ProtocolError> for Session {
 fn main() {
     let sys = actix::System::new("basic");
     let server = Arbiter::start(|_| server::Server::default());
+    let port = std::env::var("PORT")
+        .unwrap_or_else(|_| "8080".to_owned());
     
     HttpServer::new(move || {
             let state = SessionState {
@@ -101,10 +103,10 @@ fn main() {
             App::with_state(state)
                 .resource("/ws/", |r| r.route().f(chat_route))
         })
-        .bind("localhost:8080")
+        .bind(format!("localhost:{}", port))
         .unwrap()
         .start();
     
-    println!("Started HTTP server at localhost:8080");
+    println!("Listening on port {}", port);
     let _ = sys.run();
 }

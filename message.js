@@ -9,11 +9,12 @@ class Block {
 class ChunkData {
     constructor(data) {
         this.index = data.index;
+        this.size = data.size;
         this.blocks = data.blocks;
     }
 
     getChunk() {
-        return new Chunk(CHUNK_SIZE, this.index, this.blocks);
+        return new Chunk(this.size, this.index, this.blocks);
     }
 
     getIndex() {
@@ -39,9 +40,11 @@ class BlockData {
 }
 
 class EntityData {
-    constructor(id, coordinate) {
-        this.id = id;
-        this.coordinate = coordinate;
+    constructor(data) {
+        this.id = data.id;
+        this.position = data.position;
+        this.velocity = data.velocity;
+        this.acceleration = data.acceleration;
     }
 }
 

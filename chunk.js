@@ -77,36 +77,42 @@ class Chunk {
 
         for (var i = 0; i < faces.length; i++) {
             switch (faces[i]) {
-            case 0:
+
+            // TODO ...and X, -X? what's happening
+            case 2:
                 //   _
                 // *|_|
                 //
                 this.createWall(vertices, x, z, x, z + 1, y, texture);
                 break;
-            case 1: 
+
+            // TODO: +z and -z directions also flipped???
+            case 3: 
                 //  _
                 // |_|
                 //  *
                 this.createWall(vertices, x, z, x + 1, z, y, texture);
                 break;
-            case 2:
+            case 0:
                 //  _
                 // |_|*
                 //
                 this.createWall(vertices, x + 1, z, x + 1, z + 1, y, texture);
                 break;
-            case 3:
+            case 1:
                 //  *
                 //  _
                 // |_|
                 //
                 this.createWall(vertices, x, z + 1, x + 1, z + 1, y, texture);
                 break;
-            case 4:
+
+            // TODO: lower face and upper face flipped
+            case 5:
                 // Lower face
                 this.createFloor(vertices, x, z, x + 1, z + 1, y, texture);
                 break;
-            case 5:
+            case 4:
                 // Upper face
                 this.createFloor(vertices, x, z, x + 1, z + 1, y + 1, texture);
                 break;
@@ -117,9 +123,9 @@ class Chunk {
     // Generate the mesh representing the chunk
     chunkMesh() {
         const vertices = [];
-        const dx = this.index[0] * this.size;
-        const dz = this.index[1] * this.size;
-        for (var i = 0.0; i < this.data.length; i++) {
+        const dx = Math.floor(this.index[0] * this.size);
+        const dz = Math.floor(this.index[1] * this.size);
+        for (var i = 0; i < this.data.length; i++) {
             const block = this.data[i];
             const location = block[0];
             const material = block[1];
@@ -127,7 +133,9 @@ class Chunk {
             const x = location[0] + dx;
             const y = location[1];
             const z = location[2] + dz;
-            this.createBlock(vertices, x, y, z, material, faces);
+
+            // TODO: why is this -y
+            this.createBlock(vertices, -x, -y, z, material, faces);
         }
         return {
             vertices: vertices,

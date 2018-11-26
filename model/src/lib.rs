@@ -1,4 +1,5 @@
 extern crate nalgebra_glm as glm;
+extern crate noise;
 extern crate serde;
 #[macro_use]
 extern crate serde_derive;
@@ -11,4 +12,4 @@ mod generate;
 mod model;
 
 pub use model::World;
-pub use generate::Flat;
+pub use generate::{Flat, Height};

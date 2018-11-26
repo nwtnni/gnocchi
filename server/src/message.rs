@@ -14,6 +14,10 @@ pub struct Block {
 pub enum Outgoing {
     ChunkData(data::Mesh),
 
+    RegisterData {
+        id: usize
+    },
+
     BlockData {
         index: data::Index,
         block: Block,
@@ -22,6 +26,8 @@ pub enum Outgoing {
     EntityData {
         id: usize,
         position: data::Position,
+        velocity: data::Velocity,
+        acceleration: data::Acceleration,
     },
 }
 
