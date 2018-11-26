@@ -124,6 +124,6 @@ queue.on("complete",
 queue.loadManifest([
     {
         id: "wall",
-        src: "texture.jpg"
+        src: "texture.png"
     }
 ]);
