@@ -101,9 +101,9 @@ fn main() {
             };
 
             App::with_state(state)
-                .resource("/ws/", |r| r.route().f(chat_route))
+                .resource("/ws", |r| r.route().f(chat_route))
         })
-        .bind(format!("localhost:{}", port))
+        .bind(format!("0.0.0.0:{}", port))
         .unwrap()
         .start();
     
