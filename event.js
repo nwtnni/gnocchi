@@ -3,8 +3,12 @@ var CURR_Y;
 
 $(function() {
 
+    // Local testing
     // const protocol = window.location.protocol === 'https:' && 'wss://' || 'ws://';
     // const host = 'localhost:8080/ws';
+    // var connection = new WebSocket(protocol + host);
+
+    // Remote server
     const host = "wss://gnocchi-graphics.herokuapp.com/ws";
     var connection = new WebSocket(host);
     console.log(connection);
