@@ -6,12 +6,12 @@ const vert = `
 
     uniform mat4 projection;
     uniform mat4 frame;
-//    uniform mat4 model;
+    uniform mat4 model;
 
     varying vec2 geom_texCoord;
 
     void main() {
-        gl_Position = projection * frame * vec4(vert_position, 1.0);
+        gl_Position = projection * frame * model * vec4(vert_position, 1.0);
        // gl_Position = vec4(vert_position, 1.0);
         geom_texCoord = vert_texCoord;
     }`;
@@ -45,10 +45,14 @@ queue.on("complete",
                 program.textureLocation = gl.getUniformLocation(program, "texture");
                 program.projectionLocation = gl.getUniformLocation(program, "projection");
                 program.frameLocation = gl.getUniformLocation(program, "frame");
-                // program.modelLocation = gl.getUniformLocation(program, "model");
+                program.modelLocation = gl.getUniformLocation(program, "model");
 
                 // Load textures
                 program.wallTexture = createTexture(gl, queue.getResult("wall", false));
+
+                // Player mesh
+                const playerMesh = Player.getMesh();
+                program.playerMesh = createShape(gl, playerMesh.vertices, playerMesh.indices);
 
                 // Draw a single mesh
                 program.draw = function(gl, shape) {
@@ -90,7 +94,7 @@ queue.on("complete",
                 // maze.translateGuardians();
 
                 // Update projection, model, and frame matrices
-                // gl.uniformMatrix4fv(program.modelLocation, false, mat4.create());
+                gl.uniformMatrix4fv(program.modelLocation, false, mat4.create());
                 gl.uniformMatrix4fv(program.projectionLocation, false, getProjMatrix());
                 gl.uniformMatrix4fv(program.frameLocation, false, getFrameMatrix());
 
@@ -99,10 +103,18 @@ queue.on("complete",
                 gl.bindTexture(gl.TEXTURE_2D, program.wallTexture);
                 gl.uniform1i(program.textureLocation, 0);
 
+                // Draw received chunks
                 if (program.chunk) {
                     for (var i = 0; i < program.chunk.length; i++) {
                         program.draw(gl, program.chunk[i]);
                     }
+                }
+
+                // Draw other players
+                for (const k of ENTITIES.keys()) {
+                    const model = ENTITIES.get(k).getModelMatrix();
+                    gl.uniformMatrix4fv(program.modelLocation, false, model);
+                    program.draw(gl, program.playerMesh);
                 }
             }
         );
@@ -114,12 +126,4 @@ queue.loadManifest([
         id: "wall",
         src: "texture.jpg"
     }
-//     {
-//         id: "floor",
-//         src: "data/floor.jpg"
-//     },
-//     {
-//         id: "eye",
-//         src: "data/eye.jpg"
-//     }
 ]);

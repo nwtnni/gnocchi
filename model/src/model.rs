@@ -60,6 +60,10 @@ impl <G: Generator> World<G> {
         self.chunks[&index].blocks.contains_key(&Location(x, y, z)) 
     }
 
+    pub fn get_position(&self, player: usize) -> Option<Position> {
+        self.positions.get(&player).cloned()
+    }
+
     pub fn connect(&mut self, player: usize) -> (Position, Vec<Mesh>) {
         let start = Position(glm::vec3(0.5, CHUNK_SIZE as f32, 0.5));
         self.positions.insert(player, start);

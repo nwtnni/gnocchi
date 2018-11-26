@@ -75,7 +75,7 @@ class Player {
     }
 
     getModelMatrix() {
-        const t = vec3.fromValues(this.position[0], this.position[1], this.position[2]);  
+        const t = vec3.fromValues(-this.position[0], -this.position[1], this.position[2]);  
         const T = mat4.create();
         mat4.fromTranslation(T, t);
         return T;

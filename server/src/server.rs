@@ -1,4 +1,5 @@
 use std::collections::HashMap;
+use std::iter;
 
 use actix::prelude::*;
 use model::{World, Height, data};
@@ -37,34 +38,56 @@ impl Handler<Connect> for Server {
     fn handle(&mut self, connect: Connect, _: &mut Context<Self>) -> Self::Result {
         let player = self.connected.len();
         println!("Player {} connecting...", player);
+
         let register = message::Outgoing::RegisterData{ id: player };
+
         connect.addr
             .do_send(register)
             .expect("[INTERNAL ERROR]: failed to send registration data");
+
         let (position, meshes) = self.world.connect(player);
+
         let entity = message::Outgoing::EntityData {
             id: player,
-            position,        
+            position,
             velocity: data::Velocity::default(),
             acceleration: data::Acceleration::default(),
         };
-        connect.addr
-            .do_send(entity)
-            .expect("[INTERNAL ERROR]: failed to send entity data");
+
+        for addr in iter::once(&connect.addr).chain(self.connected.values()) {
+            addr.do_send(entity.clone()).expect("[INTERNAL ERROR]: failed to send entity data");
+        }
+
+        for player in self.connected.keys() {
+            let position = self.world.get_position(*player)
+                .expect("[INTERNAL ERROR]: player missing position");
+            
+            let entity = message::Outgoing::EntityData {
+                id: *player,
+                position,
+                velocity: data::Velocity::default(),
+                acceleration: data::Acceleration::default(),
+            };
+
+            connect.addr.do_send(entity)
+                .expect("[INTERNAL ERROR]: failed to send entity data");
+        }
+
         for mesh in meshes {
             let mesh = message::Outgoing::ChunkData(mesh);
             connect.addr
                 .do_send(mesh)
                 .expect("[INTERNAL ERROR]: failed to send chunk");
         }
+
         self.connected.insert(player, connect.addr);
-        player 
+        player
     }
 }
 
 impl Handler<Disconnect> for Server {
     type Result = ();
-    
+
     fn handle(&mut self, disconnect: Disconnect, _: &mut Context<Self>) -> Self::Result {
         self.connected.remove(&disconnect.player);
         self.world.disconnect(disconnect.player);
@@ -85,15 +108,19 @@ impl Handler<Incoming> for Server {
                     .do_send(mesh)
                     .expect("[INTERNAL ERROR]: failed to send chunk");
             }
+
             let entity = message::Outgoing::EntityData {
                 id: player,
                 position: next,
                 velocity: data::Velocity::default(),
                 acceleration: data::Acceleration::default(),
             };
-            address
-                .do_send(entity)
-                .expect("[INTERNAL ERROR]: failed to send entity data");
+
+            for address in self.connected.values() {
+                address
+                    .do_send(entity.clone())
+                    .expect("[INTERNAL ERROR]: failed to send entity data");
+            }
         },
         | _ => unimplemented!(),
         }
