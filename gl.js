@@ -119,7 +119,7 @@ function startWebGL(canvasName, vertexShader, fragmentShader, setup, during) {
     // var rectangle = createShape(gl, vertexData, indexData);
 
     function updateWebGL() {
-        // gl.clearColor(0.5, 0.5, 0.5, 1.0);
+        gl.clearColor(0.1, 0.5, 0.8, 1.0);
         // gl.clear(gl.COLOR_BUFFER_BIT);
         gl.useProgram(program);
 

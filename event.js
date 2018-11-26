@@ -68,7 +68,7 @@ $(function() {
     webglCanvas.onmousemove = function (event) {
         event.preventDefault();
         // event.clientX - CURR_X;
-        console.log("hi");
+        // console.log("hi");
         // dispatchEvent(new Event('load'));
     }
 
