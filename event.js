@@ -59,16 +59,42 @@ $(function() {
         connection = null;
     };
 
-    webglCanvas.onmouseenter = function (event) {
-        event.preventDefault();
-        CURR_X = event.clientX;
-        CURR_Y = event.clientY;
+
+    var clientRect = webglCanvas.getBoundingClientRect();
+    const PREVMOUSE = [0.0, 0.0];
+    const CURRMOUSE = [0.0, 0.0];
+
+    /* Programmatically exit pointer lock (user can initiate exit by pressing 'Esc' key) */
+    // endPointerLock = function() {
+    //     document.exitPointerLock();
+    // }
+
+    webglCanvas.onclick = function (event) { //TODO: differentiate between first onclick to start pointerlock vs clicking on blocks -- also show cursor for selecting blocks?
+        webglCanvas.requestPointerLock();
+
+    }
+    webglCanvas.onmousedown = function(event) {
+        PREVMOUSE[0] = event.clientX - clientRect.left;
+        PREVMOUSE[1] = event.clientY - clientRect.top;
     }
 
     webglCanvas.onmousemove = function (event) {
-        event.preventDefault();
-        // event.clientX - CURR_X;
-        // console.log("hi");
+
+        // if(document.pointerLockElement) {
+            
+            CURRMOUSE[0] = PREVMOUSE[0] + event.movementX;//event.clientX - clientRect.left;
+            CURRMOUSE[1] = PREVMOUSE[1] + event.movementY;//event.clientY - clientRect.top;
+            const prevThetaPhi = toSpherical(toWorld(PREVMOUSE));
+            const currThetaPhi = toSpherical(toWorld(CURRMOUSE));
+            const deltaTheta = currThetaPhi[0] - prevThetaPhi[0];
+            const deltaPhi = currThetaPhi[1] - prevThetaPhi[1];
+            console.log(deltaTheta + " " + deltaPhi);
+            rotate(-deltaTheta, -deltaPhi);
+            PREVMOUSE[0] = CURRMOUSE[0];
+            PREVMOUSE[1] = CURRMOUSE[1];
+        //}
+
+        //console.log("canvas mouse coords: (" + canvasX  + ", " + canvasY + ")");
         // dispatchEvent(new Event('load'));
     }
 
