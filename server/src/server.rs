@@ -55,7 +55,7 @@ impl Handler<Connect> for Server {
         };
 
         for addr in iter::once(&connect.addr).chain(self.connected.values()) {
-            addr.do_send(entity.clone()).expect("[INTERNAL ERROR]: failed to send entity data");
+            addr.do_send(entity.clone()).ok();
         }
 
         for player in self.connected.keys() {
@@ -69,8 +69,7 @@ impl Handler<Connect> for Server {
                 acceleration: data::Acceleration::default(),
             };
 
-            connect.addr.do_send(entity)
-                .expect("[INTERNAL ERROR]: failed to send entity data");
+            connect.addr.do_send(entity).ok();
         }
 
         for mesh in meshes {
@@ -117,9 +116,7 @@ impl Handler<Incoming> for Server {
             };
 
             for address in self.connected.values() {
-                address
-                    .do_send(entity.clone())
-                    .expect("[INTERNAL ERROR]: failed to send entity data");
+                address.do_send(entity.clone()).ok();
             }
         },
         | _ => unimplemented!(),
