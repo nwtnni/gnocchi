@@ -1,3 +1,5 @@
+var ID;
+var ENTITIES = new Map();
 var CHUNKS = [];
 var RELOAD = false;
 var POSITION = [0.0, 0.0, 0.0];
