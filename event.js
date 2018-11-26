@@ -16,6 +16,9 @@ $(function() {
         var data = JSON.parse(m.data);
         console.log("Received message: " + data.type);
         switch (data.type) {
+            case "RegisterData":
+                ID = data.id; 
+                break;
             case "ChunkData":
                 var chunkData = new ChunkData(data);
                 CHUNKS.push(chunkData.getChunk());
@@ -27,9 +30,26 @@ $(function() {
                 CURRENT_CHUNK.blockDiff(blockData);
                 break;
             case "EntityData":
-                var entityData = new EntityData(data);
-                POSITION = entityData.position;
-                console.log(POSITION);
+                if (data.id === ID) {
+                    POSITION = data.position;
+                    VELOCITY = data.velocity;
+                    ACCELERATION = data.acceleration;
+                    console.log(POSITION);
+                } else if (ENTITIES.has(data.id)) {
+                    const entity = ENTITIES.get(data.id);
+                    entity.position = data.position;
+                    entity.velocity = data.velocity;
+                    entity.acceleration = data.acceleration;
+                    ENTITIES.set(data.id, entity);
+                } else {
+                    const entity = new Player(
+                        data.id,
+                        data.position,
+                        data.velocity,
+                        data.acceleration
+                    );
+                    ENTITIES.set(data.id, entity);
+                }
                 break;
         }
     };

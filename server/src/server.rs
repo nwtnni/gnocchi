@@ -37,6 +37,10 @@ impl Handler<Connect> for Server {
     fn handle(&mut self, connect: Connect, _: &mut Context<Self>) -> Self::Result {
         let player = self.connected.len();
         println!("Player {} connecting...", player);
+        let register = message::Outgoing::RegisterData{ id: player };
+        connect.addr
+            .do_send(register)
+            .expect("[INTERNAL ERROR]: failed to send registration data");
         let (position, meshes) = self.world.connect(player);
         let entity = message::Outgoing::EntityData {
             id: player,
