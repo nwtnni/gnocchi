@@ -95,10 +95,14 @@ impl <G: Generator> World<G> {
 
         self.positions.insert(player, next);
         let mut meshes = Vec::new();
-        for index in Self::around(next) {
-            self.lazy_load(index);
-            meshes.push(Mesh::from(&self.chunks[&index]));
+
+        if Self::to_index(prev) != Self::to_index(next) {
+            for index in Self::around(next) {
+                self.lazy_load(index);
+                meshes.push(Mesh::from(&self.chunks[&index]));
+            }
         }
+
         (next, meshes)
     }
 }
