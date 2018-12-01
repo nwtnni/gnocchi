@@ -75,48 +75,43 @@ class Chunk {
     // Create a cube with min-x, min-y, min-z coordinate at [x, y, z]
     createBlock(vertices, x, y, z, texture, faces) {
 
-        for (var i = 0; i < faces.length; i++) {
-            switch (faces[i]) {
+        // TODO ...and X, -X? what's happening
+        if (faces & 4) {
+            //   _
+            // *|_|
+            //
+            this.createWall(vertices, x, z, x, z + 1, y, texture);
+        }
 
-            // TODO ...and X, -X? what's happening
-            case 2:
-                //   _
-                // *|_|
-                //
-                this.createWall(vertices, x, z, x, z + 1, y, texture);
-                break;
+        // TODO: +z and -z directions also flipped???
+        if (faces & 8) {
+            //  _
+            // |_|
+            //  *
+            this.createWall(vertices, x, z, x + 1, z, y, texture);
+        }
+        if (faces & 1) {
+            //  _
+            // |_|*
+            //
+            this.createWall(vertices, x + 1, z, x + 1, z + 1, y, texture);
+        }
+        if (faces & 2) {
+            //  *
+            //  _
+            // |_|
+            //
+            this.createWall(vertices, x, z + 1, x + 1, z + 1, y, texture);
+        }
 
-            // TODO: +z and -z directions also flipped???
-            case 3: 
-                //  _
-                // |_|
-                //  *
-                this.createWall(vertices, x, z, x + 1, z, y, texture);
-                break;
-            case 0:
-                //  _
-                // |_|*
-                //
-                this.createWall(vertices, x + 1, z, x + 1, z + 1, y, texture);
-                break;
-            case 1:
-                //  *
-                //  _
-                // |_|
-                //
-                this.createWall(vertices, x, z + 1, x + 1, z + 1, y, texture);
-                break;
-
-            // TODO: lower face and upper face flipped
-            case 5:
-                // Lower face
-                this.createFloor(vertices, x, z, x + 1, z + 1, y, texture);
-                break;
-            case 4:
-                // Upper face
-                this.createFloor(vertices, x, z, x + 1, z + 1, y + 1, texture);
-                break;
-            }
+        // TODO: lower face and upper face flipped
+        if (faces & 32) {
+            // Lower face
+            this.createFloor(vertices, x, z, x + 1, z + 1, y, texture);
+        }
+        if (faces & 16) {
+            // Upper face
+            this.createFloor(vertices, x, z, x + 1, z + 1, y + 1, texture);
         }
     }
 

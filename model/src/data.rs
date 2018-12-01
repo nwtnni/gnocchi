@@ -1,28 +1,23 @@
-use std::collections::{HashSet as Set, HashMap as Map};
+use std::collections::HashMap as Map;
 
 use glm;
 
 use constants::CHUNK_SIZE;
 use util;
 
-const FACES: [Face; 6] = [
-    Face::W, Face::S, Face::E, Face::N, Face::L, Face::U,
+const FACES: [Faces; 6] = [
+    Faces::W, Faces::S, Faces::E, Faces::N, Faces::L, Faces::U,
 ];
 
-enum_number! (
-    Face {
-        W = 0,
-        S = 1,
-        E = 2,
-        N = 3,
-        L = 4,
-        U = 5,
-    }
-);
-
-impl Face {
-    pub fn all() -> Set<Face> {
-        FACES.iter().cloned().collect()
+bitflags! {
+    #[derive(Serialize, Deserialize)]
+    pub struct Faces: u8 {
+        const W = 0b0000001;
+        const S = 0b0000010;
+        const E = 0b0000100;
+        const N = 0b0001000;
+        const L = 0b0010000;
+        const U = 0b0100000;
     }
 }
 
@@ -47,23 +42,23 @@ impl Block {
 pub struct Mesh {
     pub index: Index,
     pub size: usize,
-    #[serde(serialize_with = "util::serialize_map_as_vec")]
-    pub blocks: Map<Location, (Block, Set<Face>)>,
+    #[serde(serialize_with = "util::serialize_chunk")]
+    pub blocks: Map<Location, (Block, Faces)>,
 }
 
 impl <'a> From<&'a Chunk> for Mesh {
     fn from(chunk: &Chunk) -> Self {
 
-        let mut blocks: Map<Location, (Block, Set<Face>)> = Map::default();
+        let mut blocks: Map<Location, (Block, Faces)> = Map::default();
 
         for (l1, b1) in &chunk.blocks {
-            let mut faces = Face::all();
+            let mut faces = Faces::all();
 
             // Check for collisions with existing blocks
             for (l2, me, other) in l1.around() {
                 if let Some(block) = blocks.get_mut(&l2) {
-                    faces.remove(&me);
-                    block.1.remove(&other);
+                    faces.remove(me);
+                    block.1.remove(other);
                 }
             }
 
@@ -105,18 +100,19 @@ pub struct Index(pub isize, pub isize);
 pub struct Location(pub usize, pub usize, pub usize);
 
 impl Location {
-    fn next(self, face: Face) -> (Location, Face, Face) {
+    fn next(self, face: Faces) -> (Location, Faces, Faces) {
         match face {
-        | Face::W => (Location(self.0 - 1, self.1, self.2), Face::W, Face::E),
-        | Face::S => (Location(self.0, self.1, self.2 + 1), Face::S, Face::N),
-        | Face::E => (Location(self.0 + 1, self.1, self.2), Face::E, Face::W),
-        | Face::N => (Location(self.0, self.1, self.2 - 1), Face::N, Face::S),
-        | Face::L => (Location(self.0, self.1 - 1, self.2), Face::L, Face::U),
-        | Face::U => (Location(self.0, self.1 + 1, self.2), Face::U, Face::L),
+        | Faces::W => (Location(self.0 - 1, self.1, self.2), Faces::W, Faces::E),
+        | Faces::S => (Location(self.0, self.1, self.2 + 1), Faces::S, Faces::N),
+        | Faces::E => (Location(self.0 + 1, self.1, self.2), Faces::E, Faces::W),
+        | Faces::N => (Location(self.0, self.1, self.2 - 1), Faces::N, Faces::S),
+        | Faces::L => (Location(self.0, self.1 - 1, self.2), Faces::L, Faces::U),
+        | Faces::U => (Location(self.0, self.1 + 1, self.2), Faces::U, Faces::L),
+        | _ => panic!("[INTERNAL ERROR]: non-valid face"),
         }
     }
 
-    pub fn around(self) -> impl Iterator<Item = (Location, Face, Face)> {
+    pub fn around(self) -> impl Iterator<Item = (Location, Faces, Faces)> {
         FACES.iter().map(move |face| self.next(*face)) 
     }
 }

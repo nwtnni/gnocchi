@@ -1,7 +1,7 @@
 use std::collections::HashMap as Map;
-use std::hash::Hash;
 
 use serde::ser::*;
+use data;
 
 #[macro_use]
 macro_rules! enum_number {
@@ -56,16 +56,13 @@ macro_rules! enum_number {
     }
 }
 
-pub fn serialize_map_as_vec<S, K, L, R>(map: &Map<K, (L, R)>, serializer: S) -> Result<S::Ok, S::Error>
+pub fn serialize_chunk<S>(map: &Map<data::Location, (data::Block, data::Faces)>, serializer: S) -> Result<S::Ok, S::Error>
 where
     S: Serializer,
-    K: Serialize + Hash + Eq,
-    L: Serialize,
-    R: Serialize,
 {
     let mut seq = serializer.serialize_seq(Some(map.len()))?;
-    for (k, (l, r)) in map {
-        seq.serialize_element(&(k, l, r))?;
+    for (k, (b, f)) in map {
+        seq.serialize_element(&(k, b, f.bits()))?;
     }
     seq.end()
 }

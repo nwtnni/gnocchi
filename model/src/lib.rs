@@ -1,3 +1,5 @@
+#[macro_use]
+extern crate bitflags;
 extern crate nalgebra_glm as glm;
 extern crate noise;
 extern crate serde;
