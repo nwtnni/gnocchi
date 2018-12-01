@@ -5,46 +5,10 @@ class Block {
     }
 }
 
-// Incoming (server -> client) data types
-class ChunkData {
-    constructor(data) {
-        this.index = data.index;
-        this.size = data.size;
-        this.blocks = data.blocks;
-    }
-
-    getChunk() {
-        return new Chunk(this.size, this.index, this.blocks);
-    }
-
-    getIndex() {
-        return this.index;
-    }
-
-    // blockDiff(blockData) {
-    //     if (this.index === blockData.index) {
-    //         var block = blockData.block;
-    //         this.blocks
-    //             [(CHUNK_SIZE * CHUNK_SIZE * blockData.location[1])
-    //             + (CHUNK_SIZE * blockData.location[2])
-    //             + blockData.location[0]] = blockData.material; 
-    //     }
-    // }
-}
-
 class BlockData {
     constructor(index, block) {
         this.index = index;
         this.block = block;
-    }
-}
-
-class EntityData {
-    constructor(data) {
-        this.id = data.id;
-        this.position = data.position;
-        this.velocity = data.velocity;
-        this.acceleration = data.acceleration;
     }
 }
 
