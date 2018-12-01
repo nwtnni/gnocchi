@@ -4,14 +4,14 @@ var CURR_Y;
 $(function() {
 
     // Local testing
-    const protocol = window.location.protocol === 'https:' && 'wss://' || 'ws://';
-    const host = 'localhost:8080/ws';
-    var connection = new WebSocket(protocol + host);
+    // const protocol = window.location.protocol === 'https:' && 'wss://' || 'ws://';
+    // const host = 'localhost:8080/ws';
+    // var connection = new WebSocket(protocol + host);
 
     // Remote server
-    // const host = "wss://gnocchi-graphics.herokuapp.com/ws";
-    // var connection = new WebSocket(host);
-    // console.log(connection);
+    const host = "wss://gnocchi-graphics.herokuapp.com/ws";
+    var connection = new WebSocket(host);
+    console.log(connection);
 
     connection.onopen = function() {
         console.log("Connected.");
@@ -25,8 +25,8 @@ $(function() {
                 ID = data.id; 
                 break;
             case "ChunkData":
-                var chunkData = new ChunkData(data);
-                CHUNKS.push(chunkData.getChunk());
+                var chunk = new Chunk(data.size, data.index, data.blocks);
+                CHUNKS.push(chunk);
                 RELOAD = true;
                 break;
             case "BlockData":
