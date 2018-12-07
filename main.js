@@ -96,6 +96,7 @@ queue.on("complete",
                 // Update projection, model, and frame matrices
                 gl.uniformMatrix4fv(program.modelLocation, false, mat4.create());
                 gl.uniformMatrix4fv(program.projectionLocation, false, getProjMatrix());
+                //console.log(getFrameMatrix());
                 gl.uniformMatrix4fv(program.frameLocation, false, getFrameMatrix());
 
                 // Draw walls

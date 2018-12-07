@@ -3,9 +3,11 @@ var ENTITIES = new Map();
 var CHUNKS = [];
 var RELOAD = false;
 var POSITION = [0.0, 0.0, 0.0];
-var DIRECTION = [0.0, 0.0, -1.0];
+var DIRECTION = [0.0, 0.0, -1.0]; 
 var VELOCITY = [0.0, 0.0, 0.0];
 var ACCELERATION = [0.0, 0.0, 0.0];
+var theta = Math.PI;
+var phi = Math.PI/2.0;
 
 function clamp(v, min, max) {
     return Math.min(Math.max(v, min), max);
@@ -23,15 +25,27 @@ function getProjMatrix() {
 
 function getFrameMatrix() {
     var R = mat4.create();
+    var R_x = mat4.create();
+    var R_y = mat4.create();
     var F = mat4.create();
     var T = mat4.create();
-    var t = vec3.fromValues(POSITION[0], POSITION[1], -POSITION[2]);
-    var dirVec = vec3.fromValues(DIRECTION[0], DIRECTION[1], DIRECTION[2]);
-    var origVec = vec3.fromValues(0, 0, -1);
-    mat4.fromTranslation(T, t);
-    var angle = vec3.angle(dirVec, origVec);
-    mat4.fromRotation(R, angle, vec3.fromValues(0.0, 0.0, 0.0));
+    var t = vec3.fromValues(-POSITION[0], POSITION[1], POSITION[2]); //-x?
 
+    mat4.fromTranslation(T, t);
+
+    var pos = vec3.fromValues(POSITION[0], POSITION[1], POSITION[2]);
+    //var dirVec = vec3.fromValues(DIRECTION[0], DIRECTION[1], DIRECTION[2]);
+    //console.log(dirVec);
+    var dirVec = vec3.create();
+    var origVec = vec3.fromValues(0, 0, -1);
+    //var angle = vec3.angle(dirVec, origVec);
+    vec3.rotateX(dirVec, origVec, pos, phi);
+    vec3.rotateY(dirVec, dirVec, pos, theta);
+    //mat4.fromRotation(R, angle, vec3.fromValues(0.0, 0.0, 0.0));
+
+    mat4.fromXRotation(R_x, phi);
+    mat4.fromYRotation(R_y, theta);
+    mat4.multiply(R, R_x, R_y);
     mat4.multiply(F, R, T);
     return F;
 }
@@ -72,8 +86,8 @@ function toSpherical(ray) {
 function rotate(dt, dp) {
     const min = -Math.PI / 2.0 + 0.05;
     const max = Math.PI / 2.0 - 0.05;
-    this.phi = clamp(this.phi + dp, min, max);
-    this.theta += dt;
+    phi = clamp(phi + dp, min, max);
+    theta += dt;
 }
 
 
