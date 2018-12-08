@@ -91,11 +91,108 @@ function createTexture(gl, image) {
     gl.bindTexture(gl.TEXTURE_2D, null);
     return texture;
 }
+/**
+ * FOR FRAMEBUFFER OBJECT:
+*/
+
+//create texture whose pixel components are stored as floating point numbers
+function createFloatTexture(gl, width, height) {
+    var texture = gl.createTexture();
+    gl.bindTexture(gl.TEXTURE_2D, texture);
+    gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, width, height, 0, gl.RGBA, gl.FLOAT, null);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+    gl.bindTexture(gl.TEXTURE_2D, null);
+    return texture;
+}    
+
+//instantiates a double buffer (stored in output.textures[2])
+//  output.textures[0] = read buffer (created by createFloatTexture())
+//  output.textures[1] = write buffer (created by createFloatTexture())
+//
+//also has swap function that swaps read buffer with write buffer
+//  - useful since we want ping-pong buffering (technique to simplify programming
+//      when multiply operations being applied to same image in succession)
+function createDoubleBuffer(gl, width, height) {
+    var output = {
+        readBufferIndex: 0,
+        textures: [],
+        getReadBuffer: function() {
+            return this.textures[this.readBufferIndex];
+        },
+        getWriteBuffer: function() {
+            return this.textures[1 - this.readBufferIndex];
+        },
+        swap: function() {
+            this.readBufferIndex = 1 - this.readBufferIndex;
+        }
+    };
+    output.textures.push(createFloatTexture(gl, width, height));
+    output.textures.push(createFloatTexture(gl, width, height));
+    return output;
+}
+
+//Prepare FBO to write to texture
+//used to copy pixels from render buffer (at end of webgl update function)
+function drawToBufferAndSwap(gl, fbo, buffer, depthBuffer, drawFunc) {
+    gl.bindFramebuffer(gl.FRAMEBUFFER, fbo); //bind FBO
+
+    //bind a buffer to the 0th color attachment slot
+    gl.framebufferTexture2D(
+        gl.FRAMEBUFFER,
+        gl.webGlDrawBuffers.COLOR_ATTACHMENT0_WEBGL,
+        gl.TEXTURE_2D,
+        buffer.getWriteBuffer(), //primitive index texture
+        0);
+    if (depthBuffer != null) {
+        gl.framebufferRenderbuffer(
+            gl.FRAMEBUFFER,
+            gl.DEPTH_ATTACHMENT,
+            gl.RENDERBUFFER,
+            depthBuffer
+        )
+    }
+
+    //Tell WebGL to draw to buffers
+    gl.webGlDrawBuffers.drawBuffersWEBGL([
+        //list of slots we want to draw to
+        gl.webGlDrawBuffers.COLOR_ATTACHMENT0_WEBGL  // gl_FragData[0]
+    ]);
+
+    drawFunc();
+
+    //detatch 0th color attachment
+    gl.framebufferTexture2D(
+        gl.FRAMEBUFFER,
+        gl.webGlDrawBuffers.COLOR_ATTACHMENT0_WEBGL,
+        gl.TEXTURE_2D,
+        null,
+        0);
+    if (depthBuffer != null) {
+        gl.framebufferRenderbuffer(
+            gl.FRAMEBUFFER,
+            gl.DEPTH_ATTACHMENT,
+            gl.RENDERBUFFER,
+            null
+        )
+    }
+
+    gl.bindFramebuffer(gl.FRAMEBUFFER, null);
+    buffer.swap();
+}
+
 
 function startWebGL(canvasName, vertexShader, fragmentShader, setup, during) {
     var gl = initializeCanvas(canvasName);
-    var program = createProgram(gl, vertexShader, fragmentShader);
 
+    //**PICKING**//
+    gl.getExtension("OES_texture_float"); //allows us to create texture whose pixel components stored as floating point numbers
+    gl.webGlDrawBuffers = gl.getExtension("WEBGL_draw_buffers"); //allows us to render two images at once
+    //****//
+    
+    var program = createProgram(gl, vertexShader, fragmentShader);
     // program.chevron_angles = gl.getUniformLocation(program, "chevron_angles[0]");
     // program.num_chevrons = gl.getUniformLocation(program, "num_chevrons");
 
