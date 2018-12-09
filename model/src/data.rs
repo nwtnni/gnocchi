@@ -25,6 +25,12 @@ enum_number! (
     Material {
         Stone = 1,
         Grass = 2,
+        Dirt = 3,
+        Sand = 4,
+        Snow = 5,
+        Water = 6,
+        Wood = 7,
+        Leaf = 8,
     }
 );
 
@@ -35,6 +41,12 @@ pub struct Block(pub Material);
 impl Block {
     pub fn stone() -> Self { Block(Material::Stone) }
     pub fn grass() -> Self { Block(Material::Grass) }
+    pub fn dirt() -> Self { Block(Material::Dirt) }
+    pub fn sand() -> Self { Block(Material::Sand) }
+    pub fn snow() -> Self { Block(Material::Snow) }
+    pub fn water() -> Self { Block(Material::Water) }
+    pub fn wood() -> Self { Block(Material::Wood) }
+    pub fn leaf() -> Self { Block(Material::Leaf) }
 }
 
 #[derive(Serialize)]
