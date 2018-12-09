@@ -83,6 +83,7 @@ impl StreamHandler<ws::Message, ws::ProtocolError> for Session {
 
             ctx.state().addr.do_send(incoming);
         }
+        | ws::Message::Ping(m) => ctx.pong(&m),
         | ws::Message::Close(_) => ctx.stop(),
         | _ => (),
         };
