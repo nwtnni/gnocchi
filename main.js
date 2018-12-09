@@ -113,7 +113,7 @@ queue.on("complete",
                     );
                 }
 
-                while (CHUNKS_OLD.length > CACHED_CHUNKS) {
+                while (CHUNKS_OLD.length > getCache()) {
                     var max_distance = 0.0;
                     var max_chunk = 0;
                     for (var i = 0; i < CHUNKS_OLD.length; i++) {

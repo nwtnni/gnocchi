@@ -1,11 +1,17 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <link href="css/jquery-ui.min.css" rel="stylesheet">
+    <link href="css/simple-grid.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css?family=Share+Tech+Mono" rel="stylesheet">
     <style>
+    * {
+        font-family: 'Share Tech Mono', monospace !important;
+    }
     body {
-        background-color: rgb(62, 82, 27);
-        font-family: 'Share Tech Mono', monospace;font-size: 22px;color:rgb(222, 238, 229);
+        background-color: rgb(62, 82, 27) !important;
+        font-size: 22px !important;
+        color:rgb(222, 238, 229) !important;
     }
     </style>
     <meta charset="utf-8">
@@ -13,59 +19,120 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Gnocchi</title>
 
-    <!-- Bootstrap -->
-    <!-- <link href="css/bootstrap.min.css" rel="stylesheet"> -->
-    <!-- <link href="css/cs4620.css" rel="stylesheet"> -->
-
-    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+    <script src="js/jquery-ui.min.js"></script>
     <script src="js/preloadjs-0.6.2.min.js"></script>
     <script src="js/gl-matrix-min.js"></script>
-
-    <script src="chunk.js"></script>
-    <script src="player.js"></script>
-    <script src="state.js"></script>
-    <script src="message.js"></script>
-    <script src="event.js"></script>
-	<script src="gl.js"></script>
-	<script src="main.js"></script>
-    <script>
-
-    </script>
-    <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
-    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
-    <!--[if lt IE 9]>
-    <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
-    <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
-    <![endif]-->
 </head>
 <body>
-	<div class="container">
-        <h1 align="center">Gnocchi</h1>
-        <center>(...alternative Minecraft.)</center><br/>
-		<div align="center">
-			<canvas tabindex="1" id="webglCanvas" style="border: none; background-color: black;" width="800" height="600"></canvas>
-		</div>
-		<div>
-            <br/>
-            <center>Click canvas to start. <br/> Pan camera - mouse. <br/> Move around map - WASD. <br/> </center>             
-            <center><br/>. . . . <br/></center>
-			<h3 align="center">Members</h3>
-			<ul align="center">Angela Jin (aj445), Newton Ni (cn279), Irene Yoon (ey222)<br/>
-		</div>
-	</div>				
+    <h1 align="center">Gnocchi</h1>
+    <center>(...alternative Minecraft.)</center><br/>
+    <div align="center">
+        <canvas tabindex="1" id="webglCanvas" style="border: none; background-color: black;" width="800" height="600"></canvas>
+    </div>
+    <div>
+        <br/>
+        <center>Click canvas to start. <br/> Pan camera - mouse. <br/> Move around map - WASD. <br/> </center>             
+        <center><br/>. . . . <br/></center>
 
-<!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
-<!-- <script src="js/jquery-3.1.1.min.js"></script> -->
-<!-- <script src="js/exif.js"></script> -->
-<!-- <script src="js/preloadjs.min.js"></script> -->
+        <div class="container">
+            <div class="row">
+                <div class="col-2"></div>
+                <div class="col-8">
+                    <center>Movement Speed</center>
+                    <div id="speedSlider"></div>
+                </div>
+            </div> 
+            <div class="row">
+                <div class="col-2"></div>
+                <div class="col-8">
+                    <center>Cached Chunks</center>
+                    <div id="cacheSlider"></div>
+                </div>
+            </div> 
+            <div class="row">
+                <div class="col-2"></div>
+                <div class="col-8">
+                    <center>Field of View</center>
+                    <div id="fovSlider"></div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-2"></div>
+                <div class="col-8">
+                    <center>X-Axis View Sensitivity</center>
+                    <div id="xAxisSlider"></div>
+                </div>
+            </div> 
+            <div class="row">
+                <div class="col-2"></div>
+                <div class="col-8">
+                    <center>Y-Axis View Sensitivity</center>
+                    <div id="yAxisSlider"></div>
+                </div>
+            </div> 
+        </div>
 
-
-<!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
-<!-- <script src="js/jquery-ui.min.js"></script> -->
-<!-- Include all compiled plugins (below), or include individual files as needed -->
-<!-- <script src="js/bootstrap.min.js"></script> -->
-<!-- Google Code Prettifier -->
-<!-- <script src="https://cdn.rawgit.com/google/code-prettify/master/loader/run_prettify.js"></script> -->
-
+        <h3 align="center">Members</h3>
+        <ul align="center">Angela Jin (aj445), Newton Ni (cn279), Irene Yoon (ey222)<br/>
+    </div>
 </body>
+<script>
+    $("#speedSlider").slider({
+        min: 1,
+        max: 20,
+        value: 10,
+    }); 
+
+    $("#cacheSlider").slider({
+        min: 8,
+        max: 64,
+        value: 32,
+    }); 
+
+    $("#fovSlider").slider({
+        min: 20,
+        max: 80,
+        value: 45,
+    }); 
+
+    $("#xAxisSlider").slider({
+        min: 1,
+        max: 10,
+        value: 5,
+    }); 
+
+    $("#yAxisSlider").slider({
+        min: 1,
+        max: 10,
+        value: 5,
+    }); 
+
+    function getSpeed() {
+        return 0.05 * $("#speedSlider").slider("value");
+    }
+
+    function getCache() {
+        return Math.floor($("#cacheSlider").slider("value"));
+    }
+
+    function getFOV() {
+        return $("#fovSlider").slider("value") * Math.PI / 180.0;
+    }
+
+    function getXAxis() {
+        return 0.001 * $("#xAxisSlider").slider("value");
+    }
+
+    function getYAxis() {
+        return 0.001 * $("#yAxisSlider").slider("value");
+    }
+</script>
+<script src="chunk.js"></script>
+<script src="player.js"></script>
+<script src="state.js"></script>
+<script src="message.js"></script>
+<script src="event.js"></script>
+<script src="gl.js"></script>
+<script src="main.js"></script>
 </html>

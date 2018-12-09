@@ -68,7 +68,7 @@ webglCanvas.onclick = function (event) {
 
 webglCanvas.onmousemove = function (event) {
     if (document.pointerLockElement) {
-        rotate(event.movementX * SENSITIVITY, event.movementY * SENSITIVITY);
+        rotate(event.movementX * getXAxis(), event.movementY * getYAxis());
     }
 };
 
@@ -115,7 +115,7 @@ window.onkeydown = function (event) {
         return;
     }
 
-    vec3.scale(direction, direction, SPEED);
+    vec3.scale(direction, direction, getSpeed());
     translate(direction);
     const move = new MoveData(direction);
     connection.send(JSON.stringify(move));
