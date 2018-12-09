@@ -16,7 +16,7 @@ class BlockData {
 class MoveData {
     constructor(direction) {
         this.type = "MoveData";
-        this.direction = direction;
+        this.direction = [direction[0], direction[1], direction[2]];
     }
 }
 

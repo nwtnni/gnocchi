@@ -2,7 +2,7 @@ use std::collections::HashMap;
 use std::iter;
 
 use actix::prelude::*;
-use model::{World, Debug, data};
+use model::{World, Debug};
 use message;
 
 #[derive(Message)]
@@ -50,8 +50,6 @@ impl Handler<Connect> for Server {
         let entity = message::Outgoing::EntityData {
             id: player,
             position,
-            velocity: data::Velocity::default(),
-            acceleration: data::Acceleration::default(),
         };
 
         for addr in iter::once(&connect.addr).chain(self.connected.values()) {
@@ -65,8 +63,6 @@ impl Handler<Connect> for Server {
             let entity = message::Outgoing::EntityData {
                 id: *player,
                 position,
-                velocity: data::Velocity::default(),
-                acceleration: data::Acceleration::default(),
             };
 
             connect.addr.do_send(entity).ok();
@@ -99,7 +95,7 @@ impl Handler<Incoming> for Server {
     fn handle(&mut self, Incoming(player, message): Incoming, _: &mut Context<Self>) -> Self::Result {
         match message {
         | message::Incoming::MoveData { direction } => {
-            let (next, loaded) = self.world.try_move(player, direction, 1.0);
+            let (next, loaded) = self.world.translate(player, direction);
             let address = &self.connected[&player];
             for mesh in loaded {
                 let mesh = message::Outgoing::ChunkData(mesh);
@@ -111,8 +107,6 @@ impl Handler<Incoming> for Server {
             let entity = message::Outgoing::EntityData {
                 id: player,
                 position: next,
-                velocity: data::Velocity::default(),
-                acceleration: data::Acceleration::default(),
             };
 
             for address in self.connected.values() {
