@@ -36,9 +36,21 @@ connection.onmessage = function(m) {
             break;
         case "EntityData":
             if (data.id === ID) {
-                POSITION = data.position;
-                VELOCITY = data.velocity;
-                ACCELERATION = data.acceleration;
+                POSITION = vec3.fromValues(
+                    data.position[0],
+                    data.position[1],
+                    data.position[2]
+                );
+                VELOCITY = vec3.fromValues(
+                    data.velocity[0],
+                    data.velocity[1],
+                    data.velocity[2]
+                );
+                ACCELERATION = vec3.fromValues(
+                    data.acceleration[0],
+                    data.acceleration[1],
+                    data.acceleration[2]
+                );
                 console.log(POSITION);
             } else if (ENTITIES.has(data.id)) {
                 const entity = ENTITIES.get(data.id);
@@ -64,94 +76,15 @@ connection.onclose = function() {
     connection = null;
 };
 
-
-var clientRect = webglCanvas.getBoundingClientRect();
-const PREVMOUSE = [0.0, 0.0];
-const CURRMOUSE = [0.0, 0.0];
-
-/* Programmatically exit pointer lock (user can initiate exit by pressing 'Esc' key) */
-
-// endPointerLock = function() {
-//     document.exitPointerLock();
-// }
-
-//from ppa2
-// const CANVAS = $("#webglCanvas");
-
-
-// var MOUSEDOWN = false;
-
-// /*
-// * Normalized mouse coordinates (-1, 1)
-// */
-// function normalize(x, y) {
-// const width = CANVAS.width() / 2;
-// const height = CANVAS.height() / 2;
-// return [(x - width) / width, (height  - y) / height];
-// }
-
-// /*
-// *  Mouse move event updates current mouse position relative to WebGL canvas
-// */
-
-// $(window).mousemove(function(event) {
-// console.log("mousemove");
-// const curr = normalize(event.clientX - clientRect.left, event.clientY - clientRect.top);
-// PREVMOUSE[0] = CURRMOUSE[0];
-// PREVMOUSE[1] = CURRMOUSE[1];
-// CURRMOUSE[0] = curr[0];
-// CURRMOUSE[1] = curr[1];
-// if (MOUSEDOWN) {
-//     const currThetaPhi = toSpherical(toWorld(CURRMOUSE));
-//     const prevThetaPhi = toSpherical(toWorld(PREVMOUSE));
-//     const deltaTheta = currThetaPhi[0] - prevThetaPhi[0];
-//     const deltaPhi = currThetaPhi[1] - prevThetaPhi[1];
-//     console.log(deltaTheta);
-//     rotate(-deltaTheta, -deltaPhi);
-// }
-// });
-
-// CANVAS.mousedown(function(event) {
-// console.log("mousedown");
-// const curr = normalize(event.clientX - clientRect.left, event.clientY - clientRect.top);
-// MOUSEDOWN = true;
-// PREVMOUSE[0] = curr[0];
-// PREVMOUSE[1] = curr[1];
-// CURRMOUSE[0] = curr[0];
-// CURRMOUSE[1] = curr[1];
-// });
-
-// $(window).mouseup(function(event) {
-// console.log("mouseup");
-// MOUSEDOWN = false;
-// });
-
 webglCanvas.onclick = function (event) { //TODO: differentiate between first onclick to start pointerlock vs clicking on blocks -- also show cursor for selecting blocks?
     webglCanvas.requestPointerLock();
-
-}
-webglCanvas.onmousedown = function(event) {
-    PREVMOUSE[0] = event.clientX - clientRect.left;
-    PREVMOUSE[1] = event.clientY - clientRect.top;
-}
+};
 
 webglCanvas.onmousemove = function (event) {
-
-    if(document.pointerLockElement) {
-        CURRMOUSE[0] = PREVMOUSE[0] + event.movementX;
-        CURRMOUSE[1] = PREVMOUSE[1] + event.movementY;
-        const prevThetaPhi = toSpherical(toWorld(PREVMOUSE));
-        const currThetaPhi = toSpherical(toWorld(CURRMOUSE));
-        const deltaTheta = currThetaPhi[0] - prevThetaPhi[0];
-        const deltaPhi = currThetaPhi[1] - prevThetaPhi[1];
-        rotate(-2 * deltaTheta, -2 * deltaPhi);
-        PREVMOUSE[0] = CURRMOUSE[0];
-        PREVMOUSE[1] = CURRMOUSE[1];
+    if (document.pointerLockElement) {
+        rotate(-event.movementX * SENSITIVITY, -event.movementY * SENSITIVITY);
     }
-
-    //console.log("canvas mouse coords: (" + canvasX  + ", " + canvasY + ")");
-    // dispatchEvent(new Event('load'));
-}
+};
 
 window.onkeydown = function (event) {
     var direction = null;
@@ -160,14 +93,15 @@ window.onkeydown = function (event) {
     case 38: // Up
     case 87: // W
         event.preventDefault();
-        direction = DIRECTION;
+        direction = getDirection();
+        vec3.normalize(direction, direction);
+        direction = [direction[0], direction[1], direction[2]];
         break;
     case 65: // A
         event.preventDefault();
-        var dirVec = vec3.create();
+        var dirVec = getDirection();
         var posVec = vec3.create();
         var rotVec = vec3.create();
-        vec3.set(dirVec, DIRECTION[0], DIRECTION[1], DIRECTION[2]);
         vec3.set(posVec, 0, 0, 0);
         vec3.rotateY(rotVec, dirVec, posVec, Math.PI/2);
         vec3.normalize(rotVec, rotVec);
@@ -176,15 +110,15 @@ window.onkeydown = function (event) {
     case 40: // Down
     case 83: // S
         event.preventDefault();
-        direction = [-DIRECTION[0], -DIRECTION[1], -DIRECTION[2]];
-        
+        direction = getDirection();
+        vec3.normalize(direction, direction);
+        direction = [-direction[0], -direction[1], -direction[2]];
         break;
     case 68: // D
         event.preventDefault();
-        var dirVec = vec3.create();
+        var dirVec = getDirection();
         var posVec = vec3.create();
         var rotVec = vec3.create();
-        vec3.set(dirVec, DIRECTION[0], DIRECTION[1], DIRECTION[2]);
         vec3.set(posVec, 0, 0, 0);
         vec3.rotateY(rotVec, dirVec, posVec, 3 * Math.PI/2);
         vec3.normalize(rotVec, rotVec);
