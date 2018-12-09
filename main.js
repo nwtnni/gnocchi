@@ -9,21 +9,35 @@ const vert = `
     uniform mat4 model;
 
     varying vec2 geom_texCoord;
+    varying float fog;
+
+    float getFog() {
+        float density = 0.001;
+        const float LOG2 = 1.442695;
+        float z;
+        z = length(vec3(model * vec4(vert_position, 1.0)));
+        return clamp(exp2(- density * z * z * LOG2), 0.0, 1.0);
+    }
 
     void main() {
         gl_Position = projection * frame * model * vec4(vert_position, 1.0);
        // gl_Position = vec4(vert_position, 1.0);
         geom_texCoord = vert_texCoord;
+        fog = getFog();
     }`;
 
 const frag = `
     precision highp float;
     varying vec2 geom_texCoord;
+    varying float fog;
 
     uniform sampler2D texture;
 
     void main() {
+        vec4 fogColor = vec4(0.1, 0.1, 0.1, 1);
         gl_FragColor = texture2D(texture, geom_texCoord);
+        gl_FragColor = mix(fogColor, gl_FragColor, fog);
+        gl_FragColor = clamp(gl_FragColor, 0.0, 1.0);
     }`;
 
 var queue = new createjs.LoadQueue();
