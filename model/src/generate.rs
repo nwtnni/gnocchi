@@ -51,7 +51,10 @@ impl Generator for Debug {
             Block::water()
         };
         let mut chunk = Chunk { index, blocks: Map::default() };
-        for (x, z) in iter_chunk() { chunk.set(Location(x, 0, z), block); }
+        for (x, z) in iter_chunk() {
+            chunk.set(Location(x, 0, z), block);
+            chunk.set(Location(x, 1, z), block);
+        }
         chunk
     }
 }

@@ -6,7 +6,7 @@ var POSITION = vec3.fromValues(0.0, 0.0, 0.0);
 var VELOCITY = vec3.fromValues(0.0, 0.0, 0.0);
 var ACCELERATION = vec3.fromValues(0.0, 0.0, 0.0);
 var THETA = 0.0;
-var PHI = Math.PI;
+var PHI = 0.0;
 
 const SENSITIVITY = 0.005;
 
@@ -34,6 +34,7 @@ function getDirection() {
 
     vec3.rotateX(dirVec, origVec, POSITION, PHI);
     vec3.rotateY(dirVec, dirVec, POSITION, THETA);
+    vec3.normalize(dirVec, dirVec);
     return dirVec;
 }
 
@@ -41,14 +42,17 @@ function getFrameMatrix() {
     var R = mat4.create();
     var R_x = mat4.create();
     var R_y = mat4.create();
+    var R_z = mat4.create();
     var F = mat4.create();
     var T = mat4.create();
-    var t = vec3.clone(POSITION);
-    vec3.negate(t, t);
+    var t = vec3.fromValues(-POSITION[0], -POSITION[1], -POSITION[2]);
     mat4.fromTranslation(T, t);
+    mat4.fromZRotation(R_z, Math.PI);
     mat4.fromXRotation(R_x, PHI);
     mat4.fromYRotation(R_y, THETA);
-    mat4.multiply(R, R_x, R_y);
+    mat4.multiply(R, R, R_z);
+    mat4.multiply(R, R, R_x);
+    mat4.multiply(R, R, R_y);
     mat4.multiply(F, R, T);
     return F;
 }

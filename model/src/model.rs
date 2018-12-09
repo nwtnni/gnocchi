@@ -48,24 +48,12 @@ impl <G: Generator> World<G> {
         }
     }
 
-    fn is_occupied(&mut self, position: Position) -> bool {
-        let scale = CHUNK_SIZE as f32;
-        let dx = (position.0.x / scale).floor() as isize;
-        let dz = (position.0.z / scale).floor() as isize;
-        let index = Index(dx, dz);
-        let x = (position.0.x - (dx * CHUNK_SIZE as isize) as f32).round() as usize;
-        let y = position.0.y.round() as usize;
-        let z = (position.0.z - (dz * CHUNK_SIZE as isize) as f32).round() as usize;
-        self.lazy_load(index);
-        self.chunks[&index].blocks.contains_key(&Location(x, y, z)) 
-    }
-
     pub fn get_position(&self, player: usize) -> Option<Position> {
         self.positions.get(&player).cloned()
     }
 
     pub fn connect(&mut self, player: usize) -> (Position, Vec<Mesh>) {
-        let start = Position(glm::vec3(0.5, CHUNK_SIZE as f32, 0.5));
+        let start = Position(glm::vec3(0.5, 2.5, -0.5));
         self.positions.insert(player, start);
         let mut meshes = Vec::with_capacity(9);
         for index in Self::around(start) {
@@ -85,17 +73,12 @@ impl <G: Generator> World<G> {
         direction: Direction,
         magnitude: f32
     ) -> (Position, Vec<Mesh>) {
-        // TODO: collision checking here
+
         let prev = self.positions[&player];
         let next = prev.translate(direction, magnitude);
-
-        if self.is_occupied(next) {
-            return (prev, Vec::with_capacity(0))
-        }
-
         self.positions.insert(player, next);
-        let mut meshes = Vec::new();
 
+        let mut meshes = Vec::new();
         if Self::to_index(prev) != Self::to_index(next) {
             for index in Self::around(next) {
                 self.lazy_load(index);
