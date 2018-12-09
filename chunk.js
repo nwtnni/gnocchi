@@ -12,12 +12,15 @@ class Chunk {
     }
 
     // Create a single vertex and push it onto [vertices] and [indices] lists
-    createVertex(vertices, vertex, u, v) {
+    createVertex(vertices, vertex, u, v, normal) {
         for (var i = 0; i < vertex.length; i++) {
             vertices.push(vertex[i]);
         }
         vertices.push(u);
         vertices.push(v);
+        for (var i = 0; i < normal.length; i++) {
+            vertices.push(normal[i]);
+        }
     }
 
     // Create a single square from four corners [bl], [br], [tl], and [tr]
@@ -56,16 +59,26 @@ class Chunk {
         // 3 ---- 2
         //   |x/|
         // 1 |/_|
-        this.createVertex(vertices, bl, 0.0 + xTex, 0.0 + yTex);
-        this.createVertex(vertices, tr, 0.25 + xTex, 0.5 + yTex);
-        this.createVertex(vertices, tl, 0.0 + xTex, 0.5 + yTex);
+        var normal = vec3.create();
+        var vec1 = vec3.fromValues(tr[0] - bl[0], tr[1] - bl[1], tr[2] - bl[2]); //tr - bl
+        var vec2 = vec3.fromValues(tl[0] - bl[0], tl[1] - bl[1], tl[2] - bl[2]); //tl - bl
+        vec3.cross(normal, vec1, vec2);
+        vec3.normalize(normal, normal);
+        this.createVertex(vertices, bl, 0.0 + xTex, 0.0 + yTex, normal);
+        this.createVertex(vertices, tr, 0.25 + xTex, 0.5 + yTex, normal);
+        this.createVertex(vertices, tl, 0.0 + xTex, 0.5 + yTex, normal);
 
         //   ---- 3
         //   | /|
         // 1 |/x| 2
-        this.createVertex(vertices, bl, 0.0 + xTex, 0.0 + yTex);
-        this.createVertex(vertices, br, 0.25 + xTex, 0.0 + yTex);
-        this.createVertex(vertices, tr, 0.25 + xTex, 0.5 + yTex);
+        var normal2 = vec3.create();
+        var veca = vec3.fromValues(br[0] - bl[0], br[1] - bl[1], br[2] - bl[2]); //br - bl
+        var vecb = vec3.fromValues(tr[0] - bl[0], tr[1] - bl[1], tr[2] - bl[2]); //tr - bl
+        vec3.cross(normal2, veca, vecb);
+        vec3.normalize(normal2, normal2);
+        this.createVertex(vertices, bl, 0.0 + xTex, 0.0 + yTex, normal2);
+        this.createVertex(vertices, br, 0.25 + xTex, 0.0 + yTex, normal2);
+        this.createVertex(vertices, tr, 0.25 + xTex, 0.5 + yTex, normal2);
     }
 
     // Create a vertical wall from bottom two points [x1, z1] and [x2, z2] at height [y]
@@ -120,7 +133,7 @@ class Chunk {
         return {
             vertices: vertices,
             indices: Array.from(
-                new Array(Math.floor(vertices.length / 5)),
+                new Array(Math.floor(vertices.length / 8)),
                 function (x, i) { return i; }
             )
         };
