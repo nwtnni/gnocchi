@@ -76,7 +76,8 @@ queue.on("complete",
                 program.backgroundLocation = gl.getUniformLocation(program, "background");
                 program.revLightDirLocation = gl.getUniformLocation(program, "revLightDir"); //light dir
                 // Load textures
-                program.wallTexture = createTexture(gl, queue.getResult("wall", false));
+                program.textures = createTexture(gl, queue.getResult("textures", false));
+                program.steve = createTexture(gl, queue.getResult("steve", false));
 
                 // Player mesh
                 const playerMesh = Player.getMesh();
@@ -91,6 +92,20 @@ queue.on("complete",
                     gl.vertexAttribPointer(program.vert_texCoord, 2, gl.FLOAT, false, 4 * 8, 4 * 3);
                     gl.enableVertexAttribArray(program.vert_normal);
                     gl.vertexAttribPointer(program.vert_normal, 3, gl.FLOAT, false, 4 * 8, 4 * 5);
+                    gl.bindBuffer(gl.ARRAY_BUFFER, null);
+
+                    gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, shape.indexBuffer);
+                    gl.drawElements(gl.TRIANGLES, shape.size, gl.UNSIGNED_SHORT, 0);
+                    gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, null);
+                };
+
+                // Draw a single player
+                program.drawSteve = function(gl, shape) {
+                    gl.bindBuffer(gl.ARRAY_BUFFER, shape.vertexBuffer);
+                    gl.enableVertexAttribArray(program.vert_position);
+                    gl.vertexAttribPointer(program.vert_position, 3, gl.FLOAT, false, 4 * 5, 0);
+                    gl.enableVertexAttribArray(program.vert_texCoord);
+                    gl.vertexAttribPointer(program.vert_texCoord, 2, gl.FLOAT, false, 4 * 5, 4 * 3);
                     gl.bindBuffer(gl.ARRAY_BUFFER, null);
 
                     gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, shape.indexBuffer);
@@ -120,7 +135,7 @@ queue.on("complete",
                     for (var i = 0; i < CHUNKS_OLD.length; i++) {
                         const chunk = CHUNKS[CHUNKS_OLD[i]];
                         const size = chunk.size;
-                        const pos = vec3.fromValues(chunk.index[0] * size, 0, chunk.index[1] * size); 
+                        const pos = vec3.fromValues(chunk.index[0] * size, 0, chunk.index[1] * size);
                         const dist = vec3.distance(POSITION, pos);
                         if (dist > max_distance) {
                             max_distance = dist;
@@ -152,7 +167,7 @@ queue.on("complete",
 
                 // Draw walls
                 gl.activeTexture(gl.TEXTURE0);
-                gl.bindTexture(gl.TEXTURE_2D, program.wallTexture);
+                gl.bindTexture(gl.TEXTURE_2D, program.textures);
                 gl.uniform1i(program.textureLocation, 0);
 
                 // Draw received chunks
@@ -162,11 +177,14 @@ queue.on("complete",
                     );
                 }
 
+                gl.bindTexture(gl.TEXTURE_2D, program.steve);
+                gl.uniform1i(program.textureLocation, 0);
+
                 // Draw other players
                 for (const k of ENTITIES.keys()) {
                     const model = ENTITIES.get(k).getModelMatrix();
                     gl.uniformMatrix4fv(program.modelLocation, false, model);
-                    program.draw(gl, program.playerMesh);
+                    program.drawSteve(gl, program.playerMesh);
                 }
             }
         );
@@ -175,7 +193,11 @@ queue.on("complete",
 
 queue.loadManifest([
     {
-        id: "wall",
+        id: "textures",
         src: "textures.png"
+    },
+    {
+        id: "steve",
+        src: "steve.jpg"
     }
 ]);

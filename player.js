@@ -2,12 +2,10 @@ class Player {
     constructor(id, position, velocity, acceleration) {
         this.id = id;
         this.position = position;
-        this.velocity = velocity;
-        this.acceleration = acceleration;
     }
 
     static getMesh() {
-        const R = 0.5;
+        const R = 1.0;
         const vertices = [
 
             // +Z face
@@ -75,7 +73,7 @@ class Player {
     }
 
     getModelMatrix() {
-        const t = vec3.fromValues(-this.position[0], -this.position[1], this.position[2]);  
+        const t = vec3.fromValues(this.position[0], this.position[1], this.position[2]);  
         const T = mat4.create();
         mat4.fromTranslation(T, t);
         return T;

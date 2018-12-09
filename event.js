@@ -11,7 +11,6 @@ var connection = new WebSocket(protocol + host);
 // Remote server
 // const host = "wss://gnocchi-graphics.herokuapp.com/ws";
 // var connection = new WebSocket(host);
-// console.log(connection);
 
 connection.onopen = function() {
     console.log("Connected.");
@@ -41,15 +40,11 @@ connection.onmessage = function(m) {
             } else if (ENTITIES.has(data.id)) {
                 const entity = ENTITIES.get(data.id);
                 entity.position = data.position;
-                entity.velocity = data.velocity;
-                entity.acceleration = data.acceleration;
                 ENTITIES.set(data.id, entity);
             } else {
                 const entity = new Player(
                     data.id,
-                    data.position,
-                    data.velocity,
-                    data.acceleration
+                    data.position
                 );
                 ENTITIES.set(data.id, entity);
             }
