@@ -37,22 +37,18 @@ pub struct Debug;
 
 impl Generator for Debug {
     fn generate(&mut self, index: Index) -> Chunk {
-        let block = if index.0 < 0 && index.1 < 0 {
-            Block::stone()
-        } else if index.0 < 0 && index.1 > 0 {
+        let block = if index.0 == 0 && index.1 == 0 {
+            Block::stone() 
+        } else if index.0 == 0 && index.1 > 0 {
             Block::grass()
-        } else if index.0 > 0 && index.1 < 0 {
+        } else if index.0 == 0 && index.1 < 0 {
             Block::dirt()
-        } else if index.0 > 0 && index.1 > 0 {
-            Block::sand() 
-        } else if index.0 == 0 && index.1 == 0 {
-            Block::snow() 
-        } else if index.0 == 0 {
-            Block::water()
-        } else if index.1 == 0 {
-            Block::wood()
+        } else if index.0 > 0 && index.1 == 0 {
+            Block::sand()
+        } else if index.0 < 0 && index.1 == 0 {
+            Block::snow()
         } else {
-            unreachable!()    
+            Block::water()
         };
         let mut chunk = Chunk { index, blocks: Map::default() };
         for (x, z) in iter_chunk() { chunk.set(Location(x, 0, z), block); }
