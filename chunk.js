@@ -25,29 +25,29 @@ class Chunk {
         var xTex = 0;
         var yTex = 0;
         switch (texture) {
-            case 1:
-                break;
-            case 2:
-                xTex = 0.25;
-                break;
-            case 3:
-                xTex = 0.5;
-                break;
-            case 4:
-                xTex = 0.75;
-                break;
             case 5:
-                yTex = 0.5;
                 break;
             case 6:
                 xTex = 0.25;
-                yTex = 0.5;
                 break;
             case 7:
                 xTex = 0.5;
-                yTex = 0.5;
                 break;
             case 8:
+                xTex = 0.75;
+                break;
+            case 1:
+                yTex = 0.5;
+                break;
+            case 2:
+                xTex = 0.25;
+                yTex = 0.5;
+                break;
+            case 3:
+                xTex = 0.5;
+                yTex = 0.5; 
+                break;
+            case 4:
                 xTex = 0.75;
                 yTex = 0.5;
                 break;
