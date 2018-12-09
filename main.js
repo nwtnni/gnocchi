@@ -101,19 +101,23 @@ queue.on("complete",
             // During update loop
             function(gl, program) {
 
-                while (CHUNKS.length > 0) {
-                    const chunk = CHUNKS.pop();
-                    const mesh = chunk.chunkMesh();
-                    program.chunk = program.chunk ? program.chunk : [];
-                    program.chunk.push(createShape(
+                while (CHUNKS_NEW.length > 0) {
+                    const chunk = CHUNKS_NEW.shift();
+                    const mesh = CHUNKS[chunk].chunkMesh();
+                    CHUNKS_OLD.push(chunk);
+                    program.chunk = program.chunk ? program.chunk : {};
+                    console.log("Hi");
+                    program.chunk[chunk] = createShape(
                         gl,
                         mesh.vertices,
                         mesh.indices
-                    ));
+                    );
                 }
 
-                while (program.chunk && program.chunk.length > CACHED_CHUNKS) {
-                    program.chunk.shift();
+                while (CHUNKS_OLD.length > CACHED_CHUNKS) {
+                    const chunk = CHUNKS_OLD.shift();
+                    delete CHUNKS[chunk];
+                    delete program.chunk[chunk];
                 }
 
                 // Sky color
@@ -141,9 +145,9 @@ queue.on("complete",
 
                 // Draw received chunks
                 if (program.chunk) {
-                    for (var i = 0; i < program.chunk.length; i++) {
-                        program.draw(gl, program.chunk[i]);
-                    }
+                    Object.values(program.chunk).forEach(
+                        mesh => program.draw(gl, mesh)
+                    );
                 }
 
                 // Draw other players

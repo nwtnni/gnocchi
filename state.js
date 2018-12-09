@@ -1,12 +1,14 @@
 var ID;
 var ENTITIES = new Map();
-var CHUNKS = [];
+var CHUNKS_NEW = [];
+var CHUNKS_OLD = [];
+var CHUNKS = {};
 var RELOAD = false;
 var POSITION = vec3.fromValues(0.0, 0.0, 0.0);
 var THETA = 0.0;
 var PHI = 0.0;
 
-var CACHED_CHUNKS = 25;
+var CACHED_CHUNKS = 32;
 var FOV = 80.0;
 var SPEED = 0.25;
 var SENSITIVITY = 0.005;

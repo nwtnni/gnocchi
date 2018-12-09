@@ -24,9 +24,11 @@ connection.onmessage = function(m) {
             ID = data.id; 
             break;
         case "ChunkData":
+            var key = JSON.stringify(data.index);
+            if (key in CHUNKS) break;
             var chunk = new Chunk(data.size, data.index, data.blocks);
-            CHUNKS.push(chunk);
-            RELOAD = true;
+            CHUNKS_NEW.push(key);
+            CHUNKS[key] = chunk;
             break;
         case "BlockData":
             var block = new Block(data.block.material, data.block.location);
