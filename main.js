@@ -3,11 +3,13 @@ const vert = `
 
     attribute vec3 vert_position;
     attribute vec2 vert_texCoord;
+    attribute vec3 vert_normal;
 
     uniform mat4 projection;
     uniform mat4 frame;
     uniform mat4 model;
     uniform vec3 position;
+    varying vec3 normal;
 
     varying vec2 geom_texCoord;
     varying float fog;
@@ -19,6 +21,9 @@ const vert = `
     }
 
     void main() {
+        //inverse transpose of world matrix for transforming normals
+        normal = vert_normal;
+
         gl_Position = projection * frame * model * vec4(vert_position, 1.0);
         geom_texCoord = vert_texCoord;
         fog = getFog();
@@ -29,13 +34,22 @@ const frag = `
     varying vec2 geom_texCoord;
     varying float fog;
 
+    varying vec3 normal;
+
     uniform vec4 background;
     uniform sampler2D texture;
+    uniform vec3 revLightDir;
 
     void main() {
+        vec3 shadingNormal = normalize(normal);
+        vec3 normRevLightDir = normalize(revLightDir);
+
+        float light = dot(shadingNormal, normRevLightDir);
+
         gl_FragColor = texture2D(texture, geom_texCoord);
         gl_FragColor = mix(background, gl_FragColor, fog);
         gl_FragColor = clamp(gl_FragColor, 0.0, 1.0);
+        gl_FragColor.rgb *= light;
     }`;
 
 var queue = new createjs.LoadQueue();
@@ -52,6 +66,7 @@ queue.on("complete",
                 // Load attributes for mesh vertices
                 program.vert_position = gl.getAttribLocation(program, "vert_position");
                 program.vert_texCoord = gl.getAttribLocation(program, "vert_texCoord");
+                program.vert_normal = gl.getAttribLocation(program, "vert_normal"); //vertex normals
 
                 // Load uniforms
                 program.textureLocation = gl.getUniformLocation(program, "texture");
@@ -60,7 +75,7 @@ queue.on("complete",
                 program.modelLocation = gl.getUniformLocation(program, "model");
                 program.backgroundLocation = gl.getUniformLocation(program, "background");
                 program.positionLocation = gl.getUniformLocation(program, "position");
-
+                program.revLightDirLocation = gl.getUniformLocation(program, "revLightDir"); //light dir
                 // Load textures
                 program.wallTexture = createTexture(gl, queue.getResult("wall", false));
 
@@ -72,9 +87,11 @@ queue.on("complete",
                 program.draw = function(gl, shape) {
                     gl.bindBuffer(gl.ARRAY_BUFFER, shape.vertexBuffer);
                     gl.enableVertexAttribArray(program.vert_position);
-                    gl.vertexAttribPointer(program.vert_position, 3, gl.FLOAT, false, 4 * 5, 0);
+                    gl.vertexAttribPointer(program.vert_position, 3, gl.FLOAT, false, 4 * 8, 0);
                     gl.enableVertexAttribArray(program.vert_texCoord);
-                    gl.vertexAttribPointer(program.vert_texCoord, 2, gl.FLOAT, false, 4 * 5, 4 * 3);
+                    gl.vertexAttribPointer(program.vert_texCoord, 2, gl.FLOAT, false, 4 * 8, 4 * 3);
+                    gl.enableVertexAttribArray(program.vert_normal);
+                    gl.vertexAttribPointer(program.vert_normal, 3, gl.FLOAT, false, 4 * 8, 4 * 5);
                     gl.bindBuffer(gl.ARRAY_BUFFER, null);
 
                     gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, shape.indexBuffer);
@@ -113,6 +130,8 @@ queue.on("complete",
                 gl.uniformMatrix4fv(program.projectionLocation, false, getProjMatrix());
                 gl.uniformMatrix4fv(program.frameLocation, false, getFrameMatrix());
                 gl.uniform3f(program.positionLocation, POSITION[0], POSITION[1], POSITION[2]);
+                gl.uniform3fv(program.revLightDirLocation, [0.5, 0.7, 1]); //set lightDir
+
 
                 // Draw walls
                 gl.activeTexture(gl.TEXTURE0);

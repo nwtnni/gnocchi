@@ -66,11 +66,15 @@ function drawShape(gl, program, shape) {
     gl.bindBuffer(gl.ARRAY_BUFFER, shape.vertexBuffer);
     var positionLocation = gl.getAttribLocation(program, "vert_position");
     gl.enableVertexAttribArray(positionLocation);
-    gl.vertexAttribPointer(positionLocation, 3, gl.FLOAT, false, 4*5, 0);
+    gl.vertexAttribPointer(positionLocation, 3, gl.FLOAT, false, 4*8, 0);
 
     var texCoordLocation = gl.getAttribLocation(program, "vert_texCoord");
     gl.enableVertexAttribArray(texCoordLocation);
-    gl.vertexAttribPointer(texCoordLocation, 2, gl.FLOAT, false, 4*5, 4*3);
+    gl.vertexAttribPointer(texCoordLocation, 2, gl.FLOAT, false, 4*8, 4*3);
+
+    var normalLocation = gl.getAttribLocation(program, "vert_normal");
+    gl.enableVertexAttribArray(normalLocation);
+    gl.vertexAttribPointer(normalLocation, 3, gl.FLOAT, false, 4*8, 4*5);
     gl.bindBuffer(gl.ARRAY_BUFFER, null);
 
     gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, shape.indexBuffer);
