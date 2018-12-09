@@ -21,7 +21,6 @@ const vert = `
 
     void main() {
         gl_Position = projection * frame * model * vec4(vert_position, 1.0);
-       // gl_Position = vec4(vert_position, 1.0);
         geom_texCoord = vert_texCoord;
         fog = getFog();
     }`;
@@ -139,6 +138,6 @@ queue.on("complete",
 queue.loadManifest([
     {
         id: "wall",
-        src: "texture.png"
+        src: "textures.png"
     }
 ]);

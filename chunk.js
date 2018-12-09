@@ -25,16 +25,30 @@ class Chunk {
         var xTex = 0;
         var yTex = 0;
         switch (texture) {
-            case 0:
-                break;
             case 1:
-                xTex = 0.5;
                 break;
             case 2:
-                yTex = 0.5;
+                xTex = 0.25;
                 break;
             case 3:
                 xTex = 0.5;
+                break;
+            case 4:
+                xTex = 0.75;
+                break;
+            case 5:
+                yTex = 0.5;
+                break;
+            case 6:
+                xTex = 0.25;
+                yTex = 0.5;
+                break;
+            case 7:
+                xTex = 0.5;
+                yTex = 0.5;
+                break;
+            case 8:
+                xTex = 0.75;
                 yTex = 0.5;
                 break;
         }
@@ -43,15 +57,15 @@ class Chunk {
         //   |x/|
         // 1 |/_|
         this.createVertex(vertices, bl, 0.0 + xTex, 0.0 + yTex);
-        this.createVertex(vertices, tr, 0.5 + xTex, 0.5 + yTex);
+        this.createVertex(vertices, tr, 0.25 + xTex, 0.5 + yTex);
         this.createVertex(vertices, tl, 0.0 + xTex, 0.5 + yTex);
 
         //   ---- 3
         //   | /|
         // 1 |/x| 2
         this.createVertex(vertices, bl, 0.0 + xTex, 0.0 + yTex);
-        this.createVertex(vertices, br, 0.5 + xTex, 0.0 + yTex);
-        this.createVertex(vertices, tr, 0.5 + xTex, 0.5 + yTex);
+        this.createVertex(vertices, br, 0.25 + xTex, 0.0 + yTex);
+        this.createVertex(vertices, tr, 0.25 + xTex, 0.5 + yTex);
     }
 
     // Create a vertical wall from bottom two points [x1, z1] and [x2, z2] at height [y]
