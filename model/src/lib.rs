@@ -14,4 +14,4 @@ mod generate;
 mod model;
 
 pub use model::World;
-pub use generate::{Flat, Height};
+pub use generate::{Debug, Flat, Height};
