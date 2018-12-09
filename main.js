@@ -48,7 +48,7 @@ const frag = `
         gl_FragColor = texture2D(texture, geom_texCoord);
         gl_FragColor = mix(background, gl_FragColor, fog);
         gl_FragColor = clamp(gl_FragColor, 0.0, 1.0);
-        gl_FragColor.rgb *= light;
+        gl_FragColor.rgb *= light * 1.5;
 
     }`;
 
