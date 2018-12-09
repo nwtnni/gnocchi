@@ -24,9 +24,11 @@ connection.onmessage = function(m) {
             ID = data.id; 
             break;
         case "ChunkData":
+            var key = JSON.stringify(data.index);
+            if (key in CHUNKS) break;
             var chunk = new Chunk(data.size, data.index, data.blocks);
-            CHUNKS.push(chunk);
-            RELOAD = true;
+            CHUNKS_NEW.push(key);
+            CHUNKS[key] = chunk;
             break;
         case "BlockData":
             var block = new Block(data.block.material, data.block.location);
@@ -66,7 +68,7 @@ webglCanvas.onclick = function (event) {
 
 webglCanvas.onmousemove = function (event) {
     if (document.pointerLockElement) {
-        rotate(event.movementX * SENSITIVITY, event.movementY * SENSITIVITY);
+        rotate(event.movementX * getXAxis(), event.movementY * getYAxis());
     }
 };
 
@@ -113,7 +115,7 @@ window.onkeydown = function (event) {
         return;
     }
 
-    vec3.scale(direction, direction, SPEED);
+    vec3.scale(direction, direction, getSpeed());
     translate(direction);
     const move = new MoveData(direction);
     connection.send(JSON.stringify(move));

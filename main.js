@@ -14,9 +14,9 @@ const vert = `
     varying float fog;
 
     float getFog() {
-        float density = 0.002;
+        float density = 0.001;
         float z = length(vec3(frame * model * vec4(vert_position, 1.0)));
-        return clamp(pow(100.0, - density * z * z), 0.0, 1.0);
+        return clamp(exp(- density * z * z), 0.0, 1.0);
     }
 
     void main() {
@@ -102,15 +102,34 @@ queue.on("complete",
             // During update loop
             function(gl, program) {
 
-                while (CHUNKS.length > 0) {
-                    const chunk = CHUNKS.pop();
-                    const mesh = chunk.chunkMesh();
-                    program.chunk = program.chunk ? program.chunk : [];
-                    program.chunk.push(createShape(
+                while (CHUNKS_NEW.length > 0) {
+                    const chunk = CHUNKS_NEW.shift();
+                    const mesh = CHUNKS[chunk].chunkMesh();
+                    CHUNKS_OLD.push(chunk);
+                    program.chunk = program.chunk ? program.chunk : {};
+                    program.chunk[chunk] = createShape(
                         gl,
                         mesh.vertices,
                         mesh.indices
-                    ));
+                    );
+                }
+
+                while (CHUNKS_OLD.length > getCache()) {
+                    var max_distance = 0.0;
+                    var max_chunk = 0;
+                    for (var i = 0; i < CHUNKS_OLD.length; i++) {
+                        const chunk = CHUNKS[CHUNKS_OLD[i]];
+                        const size = chunk.size;
+                        const pos = vec3.fromValues(chunk.index[0] * size, 0, chunk.index[1] * size); 
+                        const dist = vec3.distance(POSITION, pos);
+                        if (dist > max_distance) {
+                            max_distance = dist;
+                            max_chunk = i;
+                        }
+                    }
+                    const removed = CHUNKS_OLD.splice(max_chunk, 1);
+                    delete CHUNKS[removed[0]];
+                    delete program.chunk[removed[0]];
                 }
 
                 // Sky color
@@ -138,9 +157,9 @@ queue.on("complete",
 
                 // Draw received chunks
                 if (program.chunk) {
-                    for (var i = 0; i < program.chunk.length; i++) {
-                        program.draw(gl, program.chunk[i]);
-                    }
+                    Object.values(program.chunk).forEach(
+                        mesh => program.draw(gl, mesh)
+                    );
                 }
 
                 // Draw other players
