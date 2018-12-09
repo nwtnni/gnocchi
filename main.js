@@ -15,7 +15,7 @@ const vert = `
     varying float fog;
 
     float getFog() {
-        float density = 0.0002;
+        float density = 0.0;
         float z = length(position - vec3(model * vec4(vert_position, 1.0)));
         return clamp(pow(10.0, - density * z * z), 0.0, 1.0);
     }

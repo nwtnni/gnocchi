@@ -28,12 +28,12 @@ function getDirection() {
     var R = mat4.create();
     var R_x = mat4.create();
     var R_y = mat4.create();
-
     var dirVec = vec3.create();
-    var origVec = vec3.fromValues(0, 0, -1);
-
-    vec3.rotateX(dirVec, origVec, POSITION, PHI);
-    vec3.rotateY(dirVec, dirVec, POSITION, THETA);
+    var forward = vec3.fromValues(0, 0, -1);
+    var origin = vec3.fromValues(0, 0, 0);
+    vec3.rotateZ(dirVec, forward, origin, Math.PI);
+    vec3.rotateX(dirVec, dirVec, origin, -PHI);
+    vec3.rotateY(dirVec, dirVec, origin, -THETA);
     vec3.normalize(dirVec, dirVec);
     return dirVec;
 }
@@ -58,11 +58,8 @@ function getFrameMatrix() {
 }
 
 function rotate(dt, dp) {
-    const min = Math.PI / 2.0 + 0.05;
-    const max = 3.0 * Math.PI / 2.0 - 0.05;
-    console.log(min, max);
-    console.log(PHI);
-    PHI = clamp(PHI + dp, min, max);
+    PHI += dp;
+    PHI = clamp(PHI, -Math.PI / 2.0 + 0.05, Math.PI / 2.0 - 0.05);
     THETA += dt;
     THETA %= (Math.PI * 2.0);
 }

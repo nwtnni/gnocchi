@@ -118,8 +118,8 @@ class Chunk {
     // Generate the mesh representing the chunk
     chunkMesh() {
         const vertices = [];
-        const dx = Math.floor(this.index[0] * this.size);
-        const dz = Math.floor(this.index[1] * this.size);
+        const dx = this.index[0] * this.size;
+        const dz = this.index[1] * this.size;
         for (var i = 0; i < this.data.length; i++) {
             const block = this.data[i];
             const location = block[0];

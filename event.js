@@ -4,14 +4,14 @@ var CURR_Y;
 $(function() {
 
 // Local testing
-// const protocol = window.location.protocol === 'https:' && 'wss://' || 'ws://';
-// const host = 'localhost:8080/ws';
-// var connection = new WebSocket(protocol + host);
+const protocol = window.location.protocol === 'https:' && 'wss://' || 'ws://';
+const host = 'localhost:8080/ws';
+var connection = new WebSocket(protocol + host);
 
 // Remote server
-const host = "wss://gnocchi-graphics.herokuapp.com/ws";
-var connection = new WebSocket(host);
-console.log(connection);
+// const host = "wss://gnocchi-graphics.herokuapp.com/ws";
+// var connection = new WebSocket(host);
+// console.log(connection);
 
 connection.onopen = function() {
     console.log("Connected.");
@@ -19,13 +19,13 @@ connection.onopen = function() {
 
 connection.onmessage = function(m) {
     var data = JSON.parse(m.data);
-    console.log("Received message: " + data.type);
     switch (data.type) {
         case "RegisterData":
             ID = data.id; 
             break;
         case "ChunkData":
             var chunk = new Chunk(data.size, data.index, data.blocks);
+            console.log(data.blocks);
             CHUNKS.push(chunk);
             RELOAD = true;
             break;
@@ -100,10 +100,10 @@ window.onkeydown = function (event) {
     case 65: // A
         event.preventDefault();
         var dirVec = getDirection();
-        var posVec = vec3.create();
+        var origin = vec3.create();
         var rotVec = vec3.create();
-        vec3.set(posVec, 0, 0, 0);
-        vec3.rotateY(rotVec, dirVec, posVec, Math.PI/2);
+        vec3.rotateY(rotVec, dirVec, origin, Math.PI / 2.0);
+        vec3.set(rotVec, rotVec[0], 0.0, rotVec[2]);
         vec3.normalize(rotVec, rotVec);
         direction = [rotVec[0], rotVec[1], rotVec[2]];
         break;
@@ -116,11 +116,11 @@ window.onkeydown = function (event) {
         break;
     case 68: // D
         event.preventDefault();
-        var dirVec = getDirection();
-        var posVec = vec3.create();
-        var rotVec = vec3.create();
-        vec3.set(posVec, 0, 0, 0);
-        vec3.rotateY(rotVec, dirVec, posVec, 3 * Math.PI/2);
+        dirVec = getDirection();
+        origin = vec3.create();
+        rotVec = vec3.create();
+        vec3.rotateY(rotVec, dirVec, origin, -Math.PI / 2.0);
+        vec3.set(rotVec, rotVec[0], 0.0, rotVec[2]);
         vec3.normalize(rotVec, rotVec);
         direction = [rotVec[0], rotVec[1], rotVec[2]];
         break;
