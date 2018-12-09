@@ -67,19 +67,33 @@ pub struct Height {
 impl Generator for Height {
     fn generate(&mut self, index: Index) -> Chunk {
         let size = CHUNK_SIZE as f64;
-        let height = 5.0;
+        let height = 15.0;
+        let water_height = 10;
+        let sand_height = 2;
+        let snow_height = 2;
         let dx = index.0 as f64 * size;
         let dz = index.1 as f64 * size;
         let grass = Block::grass();
-        let stone = Block::stone();
+        let water = Block::water();
+        let sand = Block::sand();
+        let snow = Block::snow();
         let mut chunk = Chunk { index, blocks: Map::default() }; 
         for z in 0..CHUNK_SIZE {
             for x in 0..CHUNK_SIZE {
                 let xf = (x as f64 + dx) / (size * 2.0);
                 let zf = (z as f64 + dz) / (size * 2.0);
-                let height = (((self.noise.get([xf, zf]) / 2.0) + 1.0) * (height - 10.0)).floor() as usize;
-                chunk.set(Location(x, 0, z), stone);
-                for y in 1..(height + 1) { chunk.set(Location(x, y, z), grass); }
+                let height = (((self.noise.get([xf, zf]) / 2.0) + 1.0) * height).floor() as usize;
+                chunk.set(Location(x, 10, z), water);
+                for y in 1..(height + 1) { 
+                    if y > water_height {
+                        if y < water_height + sand_height {
+                            chunk.set(Location(x, y, z), sand); 
+                        } else {
+                            chunk.set(Location(x, y, z), grass); 
+                        }
+                    }
+                }
+                
             }
         }
         chunk
