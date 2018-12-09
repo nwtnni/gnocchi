@@ -49,6 +49,7 @@ const frag = `
         gl_FragColor = mix(background, gl_FragColor, fog);
         gl_FragColor = clamp(gl_FragColor, 0.0, 1.0);
         gl_FragColor.rgb *= light;
+
     }`;
 
 var queue = new createjs.LoadQueue();

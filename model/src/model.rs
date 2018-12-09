@@ -53,7 +53,7 @@ impl <G: Generator> World<G> {
     }
 
     pub fn connect(&mut self, player: usize) -> (Position, Vec<Mesh>) {
-        let start = Position(glm::vec3(0.5, 2.5, -0.5));
+        let start = Position(glm::vec3(0.5, 10.0, -0.5));
         self.positions.insert(player, start);
         let mut meshes = Vec::with_capacity(9);
         for index in Self::around(start) {

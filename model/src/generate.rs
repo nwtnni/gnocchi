@@ -4,6 +4,7 @@ use noise::{NoiseFn, Perlin};
 
 use constants::CHUNK_SIZE;
 use data::{Block, Chunk, Index, Location};
+use rand::Rng;
 
 pub trait Generator: Default {
     fn generate(&mut self, index: Index) -> Chunk;
@@ -77,6 +78,8 @@ impl Generator for Height {
         let water = Block::water();
         let sand = Block::sand();
         let snow = Block::snow();
+        let wood = Block::wood();
+        let leaf = Block::leaf();
         let mut chunk = Chunk { index, blocks: Map::default() }; 
         for z in 0..CHUNK_SIZE {
             for x in 0..CHUNK_SIZE {
@@ -90,6 +93,24 @@ impl Generator for Height {
                             chunk.set(Location(x, y, z), sand); 
                         } else {
                             chunk.set(Location(x, y, z), grass); 
+                        }
+                        if y == height && y > water_height + sand_height {
+                            let mut rng = rand::thread_rng();
+                            if rng.gen_range(0, 80) == 1 {
+                                chunk.set(Location(x, y+1, z), wood);
+                                chunk.set(Location(x, y+2, z), wood);
+                                chunk.set(Location(x, y+3, z), wood);
+                                chunk.set(Location(x+1, y+3, z+1), leaf);
+                                chunk.set(Location(x+1, y+3, z), leaf);
+                                chunk.set(Location(x+1, y+3, z-1), leaf);
+                                chunk.set(Location(x-1, y+3, z-1), leaf);
+                                chunk.set(Location(x-1, y+3, z), leaf);
+                                chunk.set(Location(x-1, y+3, z+1), leaf);
+                                chunk.set(Location(x, y+3, z-1), leaf);
+                                chunk.set(Location(x, y+3, z), leaf);
+                                chunk.set(Location(x, y+3, z+1), leaf);
+                                chunk.set(Location(x, y+4, z), leaf);
+                            }
                         }
                     }
                 }
