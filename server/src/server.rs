@@ -2,7 +2,7 @@ use std::collections::HashMap;
 use std::iter;
 
 use actix::prelude::*;
-use model::{World, Height, data};
+use model::{World, Height};
 use message;
 
 #[derive(Message)]

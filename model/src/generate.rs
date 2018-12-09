@@ -71,13 +71,11 @@ impl Generator for Height {
         let height = 15.0;
         let water_height = 10;
         let sand_height = 2;
-        let snow_height = 2;
         let dx = index.0 as f64 * size;
         let dz = index.1 as f64 * size;
         let grass = Block::grass();
         let water = Block::water();
         let sand = Block::sand();
-        let snow = Block::snow();
         let wood = Block::wood();
         let leaf = Block::leaf();
         let mut chunk = Chunk { index, blocks: Map::default() }; 
