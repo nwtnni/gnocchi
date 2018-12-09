@@ -57,7 +57,6 @@ function rotate(dt, dp) {
     const min = Math.PI / 2.0 + 0.05;
     const max = 3.0 * Math.PI / 2.0 - 0.05;
     console.log(min, max);
-    //PHI = PHI + dp;
     console.log(PHI);
     PHI = clamp(PHI + dp, min, max);
     THETA += dt;
