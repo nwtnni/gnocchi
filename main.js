@@ -7,16 +7,15 @@ const vert = `
     uniform mat4 projection;
     uniform mat4 frame;
     uniform mat4 model;
+    uniform vec3 position;
 
     varying vec2 geom_texCoord;
     varying float fog;
 
     float getFog() {
-        float density = 0.001;
-        const float LOG2 = 1.442695;
-        float z;
-        z = length(vec3(model * vec4(vert_position, 1.0)));
-        return clamp(exp2(- density * z * z * LOG2), 0.0, 1.0);
+        float density = 0.0002;
+        float z = length(position - vec3(model * vec4(vert_position, 1.0)));
+        return clamp(pow(10.0, - density * z * z), 0.0, 1.0);
     }
 
     void main() {
@@ -30,12 +29,12 @@ const frag = `
     varying vec2 geom_texCoord;
     varying float fog;
 
+    uniform vec4 background;
     uniform sampler2D texture;
 
     void main() {
-        vec4 fogColor = vec4(0.1, 0.1, 0.1, 1);
         gl_FragColor = texture2D(texture, geom_texCoord);
-        gl_FragColor = mix(fogColor, gl_FragColor, fog);
+        gl_FragColor = mix(background, gl_FragColor, fog);
         gl_FragColor = clamp(gl_FragColor, 0.0, 1.0);
     }`;
 
@@ -59,6 +58,8 @@ queue.on("complete",
                 program.projectionLocation = gl.getUniformLocation(program, "projection");
                 program.frameLocation = gl.getUniformLocation(program, "frame");
                 program.modelLocation = gl.getUniformLocation(program, "model");
+                program.backgroundLocation = gl.getUniformLocation(program, "background");
+                program.positionLocation = gl.getUniformLocation(program, "position");
 
                 // Load textures
                 program.wallTexture = createTexture(gl, queue.getResult("wall", false));
@@ -97,7 +98,8 @@ queue.on("complete",
                 }
 
                 // Sky color
-                // gl.clearColor(0.3, 0.7, 1.0, 1.0);
+                gl.clearColor(0.1, 0.5, 0.8, 1.0);
+                gl.uniform4f(program.backgroundLocation, 0.1, 0.5, 0.8, 1.0);
                 gl.enable(gl.DEPTH_TEST);
                 gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
@@ -109,8 +111,8 @@ queue.on("complete",
                 // Update projection, model, and frame matrices
                 gl.uniformMatrix4fv(program.modelLocation, false, mat4.create());
                 gl.uniformMatrix4fv(program.projectionLocation, false, getProjMatrix());
-                //console.log(getFrameMatrix());
                 gl.uniformMatrix4fv(program.frameLocation, false, getFrameMatrix());
+                gl.uniform3f(program.positionLocation, POSITION[0], POSITION[1], POSITION[2]);
 
                 // Draw walls
                 gl.activeTexture(gl.TEXTURE0);

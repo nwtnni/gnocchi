@@ -88,45 +88,18 @@ class Chunk {
 
     // Create a cube with min-x, min-y, min-z coordinate at [x, y, z]
     createBlock(vertices, x, y, z, texture, faces) {
-
-        // TODO ...and X, -X? what's happening
-        if (faces & 4) {
-            //   _
-            // *|_|
-            //
-            this.createWall(vertices, x, z, x, z + 1, y, texture);
-        }
-
-        // TODO: +z and -z directions also flipped???
-        if (faces & 8) {
-            //  _
-            // |_|
-            //  *
-            this.createWall(vertices, x, z, x + 1, z, y, texture);
-        }
-        if (faces & 1) {
-            //  _
-            // |_|*
-            //
-            this.createWall(vertices, x + 1, z, x + 1, z + 1, y, texture);
-        }
-        if (faces & 2) {
-            //  *
-            //  _
-            // |_|
-            //
-            this.createWall(vertices, x, z + 1, x + 1, z + 1, y, texture);
-        }
-
-        // TODO: lower face and upper face flipped
-        if (faces & 32) {
-            // Lower face
-            this.createFloor(vertices, x, z, x + 1, z + 1, y, texture);
-        }
-        if (faces & 16) {
-            // Upper face
-            this.createFloor(vertices, x, z, x + 1, z + 1, y + 1, texture);
-        }
+        // Western face
+        (faces & 1) && this.createWall(vertices, x, z, x, z - 1, y, texture);
+        // Southern face
+        (faces & 2) && this.createWall(vertices, x, z, x + 1, z, y, texture);
+        // Eastern face
+        (faces & 4) && this.createWall(vertices, x + 1, z, x + 1, z - 1, y, texture);
+        // Northern face
+        (faces & 8) && this.createWall(vertices, x, z - 1, x + 1, z - 1, y, texture);
+        // Lower face
+        (faces & 16) && this.createFloor(vertices, x, z, x + 1, z - 1, y, texture);
+        // Upper face
+        (faces & 32) && this.createFloor(vertices, x, z, x + 1, z - 1, y + 1, texture);
     }
 
     // Generate the mesh representing the chunk
@@ -142,9 +115,7 @@ class Chunk {
             const x = location[0] + dx;
             const y = location[1];
             const z = location[2] + dz;
-
-            // TODO: why is this -y
-            this.createBlock(vertices, -x, -y, z, material, faces);
+            this.createBlock(vertices, x, y, z, material, faces);
         }
         return {
             vertices: vertices,
