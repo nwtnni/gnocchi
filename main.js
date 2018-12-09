@@ -106,7 +106,6 @@ queue.on("complete",
                     const mesh = CHUNKS[chunk].chunkMesh();
                     CHUNKS_OLD.push(chunk);
                     program.chunk = program.chunk ? program.chunk : {};
-                    console.log("Hi");
                     program.chunk[chunk] = createShape(
                         gl,
                         mesh.vertices,
@@ -115,9 +114,21 @@ queue.on("complete",
                 }
 
                 while (CHUNKS_OLD.length > CACHED_CHUNKS) {
-                    const chunk = CHUNKS_OLD.shift();
-                    delete CHUNKS[chunk];
-                    delete program.chunk[chunk];
+                    var max_distance = 0.0;
+                    var max_chunk = 0;
+                    for (var i = 0; i < CHUNKS_OLD.length; i++) {
+                        const chunk = CHUNKS[CHUNKS_OLD[i]];
+                        const size = chunk.size;
+                        const pos = vec3.fromValues(chunk.index[0] * size, 0, chunk.index[1] * size); 
+                        const dist = vec3.distance(POSITION, pos);
+                        if (dist > max_distance) {
+                            max_distance = dist;
+                            max_chunk = i;
+                        }
+                    }
+                    const removed = CHUNKS_OLD.splice(max_chunk, 1);
+                    delete CHUNKS[removed[0]];
+                    delete program.chunk[removed[0]];
                 }
 
                 // Sky color
