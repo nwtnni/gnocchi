@@ -4,13 +4,13 @@ var CURR_Y;
 $(function() {
 
 // Local testing
-const protocol = window.location.protocol === 'https:' && 'wss://' || 'ws://';
-const host = 'localhost:8080/ws';
-var connection = new WebSocket(protocol + host);
+// const protocol = window.location.protocol === 'https:' && 'wss://' || 'ws://';
+// const host = 'localhost:8080/ws';
+// var connection = new WebSocket(protocol + host);
 
 // Remote server
-// const host = "wss://gnocchi-graphics.herokuapp.com/ws";
-// var connection = new WebSocket(host);
+const host = "wss://gnocchi-graphics.herokuapp.com/ws";
+var connection = new WebSocket(host);
 
 connection.onopen = function() {
     console.log("Connected.");
@@ -37,10 +37,6 @@ connection.onmessage = function(m) {
         case "EntityData":
             if (data.id === ID) {
                 vec3.set(POSITION, data.position[0], data.position[1], data.position[2]);
-            } else if (ENTITIES.has(data.id)) {
-                const entity = ENTITIES.get(data.id);
-                entity.position = data.position;
-                ENTITIES.set(data.id, entity);
             } else {
                 const entity = new Player(
                     data.id,
