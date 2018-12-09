@@ -1,6 +1,8 @@
 # Linter configuration
 .jshintrc
 
+.DS_Store
+
 # Cargo-related
 Cargo.lock
 target/

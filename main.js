@@ -153,19 +153,13 @@ queue.on("complete",
                 gl.enable(gl.DEPTH_TEST);
                 gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
-                // Update entity position and heading
-                // maze.translate();
-                // maze.rotate();
-                // maze.translateGuardians();
-
                 // Update projection, model, and frame matrices
                 gl.uniformMatrix4fv(program.modelLocation, false, mat4.create());
                 gl.uniformMatrix4fv(program.projectionLocation, false, getProjMatrix());
                 gl.uniformMatrix4fv(program.frameLocation, false, getFrameMatrix());
                 gl.uniform3fv(program.revLightDirLocation, [0.5, 0.7, 1]); //set lightDir
 
-
-                // Draw walls
+                // Load block textures
                 gl.activeTexture(gl.TEXTURE0);
                 gl.bindTexture(gl.TEXTURE_2D, program.textures);
                 gl.uniform1i(program.textureLocation, 0);
@@ -194,10 +188,10 @@ queue.on("complete",
 queue.loadManifest([
     {
         id: "textures",
-        src: "textures.png"
+        src: "assets/textures.png"
     },
     {
         id: "steve",
-        src: "steve.jpg"
+        src: "assets/steve.jpg"
     }
 ]);
