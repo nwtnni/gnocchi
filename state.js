@@ -6,8 +6,10 @@ var POSITION = vec3.fromValues(0.0, 0.0, 0.0);
 var THETA = 0.0;
 var PHI = 0.0;
 
-const SPEED = 0.05;
-const SENSITIVITY = 0.005;
+var CACHED_CHUNKS = 25;
+var FOV = 80.0;
+var SPEED = 0.25;
+var SENSITIVITY = 0.005;
 
 function clamp(v, min, max) {
     return Math.min(Math.max(v, min), max);
@@ -18,12 +20,11 @@ function translate(direction) {
 }
 
 function getProjMatrix() {
-    var fov = 80.0;
     var aspect = 800.0/600.0; //canvas width always 800 px wide, 600 px high
     var n = 0.1;
     var f = 100.0;
     var P = mat4.create();
-    mat4.perspective(P, fov, aspect, n, f);
+    mat4.perspective(P, FOV, aspect, n, f);
     return P;
 }
 

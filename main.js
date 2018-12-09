@@ -112,6 +112,10 @@ queue.on("complete",
                     ));
                 }
 
+                while (program.chunk && program.chunk.length > CACHED_CHUNKS) {
+                    program.chunk.shift();
+                }
+
                 // Sky color
                 gl.clearColor(0.1, 0.5, 0.8, 1.0);
                 gl.uniform4f(program.backgroundLocation, 0.1, 0.5, 0.8, 1.0);
