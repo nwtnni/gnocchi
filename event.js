@@ -25,7 +25,6 @@ connection.onmessage = function(m) {
             break;
         case "ChunkData":
             var chunk = new Chunk(data.size, data.index, data.blocks);
-            console.log(data.blocks);
             CHUNKS.push(chunk);
             RELOAD = true;
             break;
@@ -36,22 +35,7 @@ connection.onmessage = function(m) {
             break;
         case "EntityData":
             if (data.id === ID) {
-                POSITION = vec3.fromValues(
-                    data.position[0],
-                    data.position[1],
-                    data.position[2]
-                );
-                VELOCITY = vec3.fromValues(
-                    data.velocity[0],
-                    data.velocity[1],
-                    data.velocity[2]
-                );
-                ACCELERATION = vec3.fromValues(
-                    data.acceleration[0],
-                    data.acceleration[1],
-                    data.acceleration[2]
-                );
-                console.log(POSITION);
+                vec3.set(POSITION, data.position[0], data.position[1], data.position[2]);
             } else if (ENTITIES.has(data.id)) {
                 const entity = ENTITIES.get(data.id);
                 entity.position = data.position;
@@ -87,57 +71,50 @@ webglCanvas.onmousemove = function (event) {
 };
 
 window.onkeydown = function (event) {
-    var direction = null;
+    var direction = vec3.create();
 
     switch (event.which) {
     case 38: // Up
     case 87: // W
         event.preventDefault();
-        direction = getDirection();
-        vec3.normalize(direction, direction);
-        direction = [direction[0], direction[1], direction[2]];
+        vec3.normalize(direction, getDirection());
         break;
     case 65: // A
         event.preventDefault();
-        var dirVec = getDirection();
         var origin = vec3.create();
-        var rotVec = vec3.create();
-        vec3.rotateY(rotVec, dirVec, origin, Math.PI / 2.0);
-        vec3.set(rotVec, rotVec[0], 0.0, rotVec[2]);
-        vec3.normalize(rotVec, rotVec);
-        direction = [rotVec[0], rotVec[1], rotVec[2]];
+        vec3.rotateY(direction, getDirection(), origin, Math.PI / 2.0);
+        vec3.set(direction, direction[0], 0.0, direction[2]);
+        vec3.normalize(direction, direction);
         break;
     case 40: // Down
     case 83: // S
         event.preventDefault();
-        direction = getDirection();
+        vec3.negate(direction, getDirection());
         vec3.normalize(direction, direction);
-        direction = [-direction[0], -direction[1], -direction[2]];
         break;
     case 68: // D
         event.preventDefault();
-        dirVec = getDirection();
         origin = vec3.create();
-        rotVec = vec3.create();
-        vec3.rotateY(rotVec, dirVec, origin, -Math.PI / 2.0);
-        vec3.set(rotVec, rotVec[0], 0.0, rotVec[2]);
-        vec3.normalize(rotVec, rotVec);
-        direction = [rotVec[0], rotVec[1], rotVec[2]];
+        vec3.rotateY(direction, getDirection(), origin, -Math.PI / 2.0);
+        vec3.set(direction, direction[0], 0.0, direction[2]);
+        vec3.normalize(direction, direction);
         break;
     case 9:  // Tab
     case 81: // Q
         event.preventDefault();
-        direction = [0.0, 1.0, 0.0];
+        vec3.set(direction, 0.0, 1.0, 0.0);
         break;
     case 16: // Shift
     case 69: // E 
         event.preventDefault();
-        direction = [0.0, -1.0, 0.0];
+        vec3.set(direction, 0.0, -1.0, 0.0);
         break;
     default:
         return;
     }
 
+    vec3.scale(direction, direction, SPEED);
+    translate(direction);
     const move = new MoveData(direction);
     connection.send(JSON.stringify(move));
 };

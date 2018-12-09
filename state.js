@@ -3,15 +3,18 @@ var ENTITIES = new Map();
 var CHUNKS = [];
 var RELOAD = false;
 var POSITION = vec3.fromValues(0.0, 0.0, 0.0);
-var VELOCITY = vec3.fromValues(0.0, 0.0, 0.0);
-var ACCELERATION = vec3.fromValues(0.0, 0.0, 0.0);
 var THETA = 0.0;
 var PHI = 0.0;
 
+const SPEED = 0.05;
 const SENSITIVITY = 0.005;
 
 function clamp(v, min, max) {
     return Math.min(Math.max(v, min), max);
+}
+
+function translate(direction) {
+    vec3.add(POSITION, direction, POSITION);
 }
 
 function getProjMatrix() {

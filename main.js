@@ -8,16 +8,15 @@ const vert = `
     uniform mat4 projection;
     uniform mat4 frame;
     uniform mat4 model;
-    uniform vec3 position;
     varying vec3 normal;
 
     varying vec2 geom_texCoord;
     varying float fog;
 
     float getFog() {
-        float density = 0.0;
-        float z = length(position - vec3(model * vec4(vert_position, 1.0)));
-        return clamp(pow(10.0, - density * z * z), 0.0, 1.0);
+        float density = 0.002;
+        float z = length(vec3(frame * model * vec4(vert_position, 1.0)));
+        return clamp(pow(100.0, - density * z * z), 0.0, 1.0);
     }
 
     void main() {
@@ -74,7 +73,6 @@ queue.on("complete",
                 program.frameLocation = gl.getUniformLocation(program, "frame");
                 program.modelLocation = gl.getUniformLocation(program, "model");
                 program.backgroundLocation = gl.getUniformLocation(program, "background");
-                program.positionLocation = gl.getUniformLocation(program, "position");
                 program.revLightDirLocation = gl.getUniformLocation(program, "revLightDir"); //light dir
                 // Load textures
                 program.wallTexture = createTexture(gl, queue.getResult("wall", false));
@@ -129,7 +127,6 @@ queue.on("complete",
                 gl.uniformMatrix4fv(program.modelLocation, false, mat4.create());
                 gl.uniformMatrix4fv(program.projectionLocation, false, getProjMatrix());
                 gl.uniformMatrix4fv(program.frameLocation, false, getFrameMatrix());
-                gl.uniform3f(program.positionLocation, POSITION[0], POSITION[1], POSITION[2]);
                 gl.uniform3fv(program.revLightDirLocation, [0.5, 0.7, 1]); //set lightDir
 
 

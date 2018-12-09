@@ -67,15 +67,10 @@ impl <G: Generator> World<G> {
         self.positions.remove(&player);
     }
 
-    pub fn try_move(
-        &mut self,
-        player: usize,
-        direction: Direction,
-        magnitude: f32
-    ) -> (Position, Vec<Mesh>) {
+    pub fn translate(&mut self, player: usize, direction: Direction) -> (Position, Vec<Mesh>) {
 
         let prev = self.positions[&player];
-        let next = prev.translate(direction, magnitude);
+        let next = prev.translate(direction);
         self.positions.insert(player, next);
 
         let mut meshes = Vec::new();
