@@ -76,13 +76,13 @@ connection.onclose = function() {
     connection = null;
 };
 
-webglCanvas.onclick = function (event) { //TODO: differentiate between first onclick to start pointerlock vs clicking on blocks -- also show cursor for selecting blocks?
+webglCanvas.onclick = function (event) { 
     webglCanvas.requestPointerLock();
 };
 
 webglCanvas.onmousemove = function (event) {
     if (document.pointerLockElement) {
-        rotate(-event.movementX * SENSITIVITY, -event.movementY * SENSITIVITY);
+        rotate(event.movementX * SENSITIVITY, event.movementY * SENSITIVITY);
     }
 };
 
